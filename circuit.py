@@ -13,21 +13,22 @@ class Circuit():
         # alle lijsten samenvoegen, aantal duplicates tellen en dat is aantal intersections met union
         # verschil lengte oorspronkelijke lijst en lengte set = aantal intersections
         # kan sneller met intersect maar werkt misschien niet door verwijderen van intersections als er meer dan 2 samen komen
-        intersections = 1
 
-        return wire_length + 300 * intersections
+        return wire_length + 300 * self.intersections()
 
     def intersections(self):
-        intersections = 0
-        nodes_taken = []
-        for connection in self.connection_wire_dict.keys():
-            # we don't count paths with the same end or beginning as intersections
-            path = (self.connection_wire_dict[connection])[1:-1]
-            for node in path:
-                if node in nodes_taken:
-                    intersections += 1
-                else:
-                    nodes_taken.append(node)
+        # every duplicate node is an intersection
+        nodes_used = self.connection_wire_dict.values()
+        intersections = len(nodes_used) - len(set(nodes_used))
 
-        return intersections
+        # intersections in gates don't count, substract these
+        connections = self.connection_wire_dict.keys()
+        # make tuple containing all endpoints, including duplicates
+        endpoints = ()
+        for connection in connections:
+            endpoints += connection
+
+        endpoint_intersections = len(endpoints) - len(set(endpoints))
+
+        return intersections - endpoint_intersections
 
