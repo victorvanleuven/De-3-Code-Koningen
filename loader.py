@@ -1,8 +1,10 @@
 import csv
+from ast import literal_eval
 
 
-filename_grid = "data/gates&netlists/chip_0/print_0.csv"
-filename_netlist = "data/gates&netlists/chip_0/netlist_1.csv"
+filename_grid = "data/gates&netlists/example/print_0.csv"
+filename_netlist = "data/gates&netlists/example/netlist_1.csv"
+filename_output = "example/output.csv"
 
 
 def load_netlist(filename_netlist):
@@ -38,6 +40,25 @@ def load_grid(filename_grid):
             coordinates_int = tuple(map(int, coordinates))
             
             gate_coord_dict[gate] = coordinates_int
-        
-        # print(gate_coord_dict)
+
         return (gate_coord_dict)
+
+
+def load_output(filename_output):
+    paths = []
+
+    with open(filename_output) as file:
+        csvreader = csv.reader(file, delimiter=',')
+
+        # skips headers of csv
+        next(csvreader)
+
+        for row in csvreader:
+            if "chip" in row[0]:
+                break
+            coordinates = literal_eval(row[1])
+            paths.append(coordinates)
+    
+    return (paths)
+
+
