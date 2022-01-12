@@ -16,3 +16,18 @@ class Net():
         intersections = 1
 
         return wire_length + 300 * intersections
+
+    def intersections(self):
+        intersections = 0
+        nodes_taken = []
+        for connection in self.connection_wire_dict.keys():
+            # we don't count paths with the same end or beginning as intersections
+            path = (self.connection_wire_dict[connection])[1:-1]
+            for node in path:
+                if node in nodes_taken:
+                    intersections += 1
+                else:
+                    nodes_taken.append(node)
+
+        return intersections
+
