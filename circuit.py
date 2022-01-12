@@ -1,4 +1,4 @@
-class Net():
+class Circuit():
     def __init__(self, connection_wire_dict):
         # tuple als key, met lijst van tuples(coords)
         self.connection_wire_dict = connection_wire_dict

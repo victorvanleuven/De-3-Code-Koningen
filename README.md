@@ -5,5 +5,5 @@
 - _grid.py (grid class)_
 - _netlist.py (netlist class)_
 - _circuit.py (class consisting of net with wires as in example/output.csv)_
-    - _has Net.cost() as method_
+    - _has Circuit.cost() as method_
 - generate_net.py (_generates net given netlist and grid._)
