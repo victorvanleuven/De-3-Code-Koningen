@@ -1,12 +1,9 @@
 import csv
-import sys
+
 
 filename_grid = "data/gates&netlists/chip_0/print_0.csv"
 filename_netlist = "data/gates&netlists/chip_0/netlist_1.csv"
 
-def main():
-    load_netlist(filename_netlist)
-    load_grid(filename_grid)
 
 def load_netlist(filename_netlist):
     netlist = []
@@ -22,7 +19,7 @@ def load_netlist(filename_netlist):
         for row in csvreader:
             row = tuple(row)
             netlist.append(row)
-        print(netlist)
+        return(netlist)
 
 
 def load_grid(filename_grid):
@@ -41,7 +38,6 @@ def load_grid(filename_grid):
             coordinates_int = tuple(map(int, coordinates))
             
             gate_coord_dict[gate] = coordinates_int
-        print(gate_coord_dict)
-
-
-main()
+        
+        # print(gate_coord_dict)
+        return (gate_coord_dict)
