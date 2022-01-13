@@ -11,7 +11,7 @@ def main(grid, netlist, output, visualisation):
     netlist = loader.load_netlist(netlist)
     grid = loader.load_grid(grid)
 
-    solved = solve_circuit.solvecircuit(netlist, grid)
+    solved = solve_circuit.actualsolvecircuit(netlist, grid)
     circuit = Circuit(solved)
     headers = ["net", "wires"]
 
