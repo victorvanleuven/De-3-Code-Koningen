@@ -3,19 +3,34 @@ import loader
 import solve_circuit
 from circuit import Circuit
 import csv
+import visualization
 
 def main(grid, netlist, output, visualisation):
+    grid_name = grid
+    netlist_name = netlist
     netlist = loader.load_netlist(netlist)
     grid = loader.load_grid(grid)
 
     solved = solve_circuit.solvecircuit(netlist, grid)
-    print(solved)
-    headers = ["net", "wires"]
-    
-
     circuit = Circuit(solved)
-    print(circuit)
+    headers = ["net", "wires"]
 
+    grid_name_csv = grid_name.split("/")[0]
+    netlist_name_csv = netlist_name[:-4].split("/")[1].replace("list","")
+
+    new_dict = []
+    for connection in solved.keys():
+        new_row = {"net": connection, "wires": solved[connection]}
+        new_dict.append(new_row)
+
+    new_dict.append({"net": f"{grid_name_csv}_{netlist_name_csv}", "wires": circuit.cost()})
+
+    with open(output, 'w') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames = headers)
+        writer.writeheader()
+        writer.writerows(new_dict)
+
+    visualization.visualize_grid(visualisation, grid_name, output)
       
 if __name__ == "__main__":
     # Set-up parsing command line arguments

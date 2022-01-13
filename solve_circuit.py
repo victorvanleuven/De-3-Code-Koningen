@@ -25,3 +25,35 @@ def solvecircuit(netlist, gate_coords):
         connection_path_dict[connection] = path
     
     return connection_path_dict
+
+# first actual solver
+def solvecircuit(netlist, gate_coords):
+    
+    connection_path_dict = {}
+    steps_taken = []
+
+    for connection in netlist:
+        gate_a = connection[0]
+        gate_b = connection[1]
+
+        coords_gate_a = gate_coords[gate_a]
+        coords_gate_b = gate_coords[gate_b]
+        
+        path = []
+        step = np.array(coords_gate_a)
+        path.append(tuple(step))
+        for coord in range(3):
+            while step[coord] != coords_gate_b[coord]:
+                if step[coord] > coords_gate_b[coord]:
+                    possible_step = step
+                    possible_step[coord] -= 1
+                elif step[coord] < coords_gate_b[coord]:
+                    possible_step = step
+                    possible_step[coord] += 1
+
+                path.append(tuple(step))
+                steps_taken.append(step)
+
+        connection_path_dict[connection] = path
+    
+    return connection_path_dict

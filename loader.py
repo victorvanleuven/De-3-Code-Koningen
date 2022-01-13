@@ -57,7 +57,7 @@ def load_output(filename_output):
         next(csvreader)
 
         for row in csvreader:
-            if "chip" in row[0]:
+            if "net_" in row[0]:
                 break
             coordinates = literal_eval(row[1])
             coordinates = map(project_three_d, coordinates)
