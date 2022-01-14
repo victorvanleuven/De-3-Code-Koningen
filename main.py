@@ -6,6 +6,7 @@ import csv
 import visualization
 
 def main(grid, netlist, output, visualisation):
+    "usage: python3 main.py example/print_0.csv example/netlist_1.csv test/test.csv test/test.png"
     grid_name = grid
     netlist_name = netlist
     netlist = loader.load_netlist(netlist)
