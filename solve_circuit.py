@@ -74,7 +74,7 @@ def actualsolvecircuit(netlist, gate_coords_dict):
                     possible_step = tuple(possible_step)
                 else:
                     # if we already are at the right coordinate in this direction, go to the next coordinate
-                    break
+                    continue
                 
                 # check if step was already made, if so go to next coordinate, else perform step
                 print(possible_step)
