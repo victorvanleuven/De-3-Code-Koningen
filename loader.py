@@ -57,9 +57,10 @@ def load_output(filename_output):
         next(csvreader)
 
         for row in csvreader:
-            if "net_" in row[0]:
+            if "(" != row[0][0]:
                 break
             coordinates = literal_eval(row[1])
+            print(coordinates)
             coordinates = map(project_three_d, coordinates)
             paths.append(coordinates)
     
