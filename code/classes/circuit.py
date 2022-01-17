@@ -20,6 +20,7 @@ class Circuit():
         # every duplicate node is an intersection
         nodes_used = self.connection_wire_dict.values()
         nodes_used = [item for sublist in nodes_used for item in sublist]
+        
         intersections = len(nodes_used) - len(set(nodes_used))
 
         # intersections in gates don't count, substract these

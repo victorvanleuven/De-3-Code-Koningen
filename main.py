@@ -5,6 +5,7 @@ import code.visualisation.visualization as visualization
 from code.classes.netlist import Netlist
 from code.classes.grid import Grid
 from code.algorithms.baseline import solvecircuit_baseline
+from code.algorithms.first_algorithm import actualsolvecircuit
 
 def main(grid_file, netlist_file, output, visualisation):
     "usage: python3 main.py data/example/print_0.csv data/example/netlist_1.csv test/test.csv test/test.png"
@@ -13,7 +14,7 @@ def main(grid_file, netlist_file, output, visualisation):
     netlist = Netlist(netlist_file)
     grid = Grid(grid_file)
 
-    solved = solvecircuit_baseline(netlist, grid)
+    solved = actualsolvecircuit(netlist, grid)
     circuit = Circuit(solved)
     headers = ["net", "wires"]
 
