@@ -14,8 +14,8 @@ python3 main.py gate_coordinates netlist output_csv output_png
 Waarbij 'gate_coordinates' de naam is van de file waarin de coördinaten zijn gegeven van de gates. 'netlist' is de naam van file waar de netlist in staat, waar is aangegeven welke gates met elkaar in connectie zijn. De output_csv is de naam van een csv bestand waar de gebruiker wil dat de paden tussen de gaten worden opgeslagen. Die worden vervolgens gevisualiseerd en opgeslagen als een png bestand met de naam die wordt gegeven in het vierde argument. 
 
 ### De 3 Code-Koningen / Auteurs
-- Jesse Mastenbroek, 
-- Pieter Out,
+- Jesse Mastenbroek, 12413437
+- Pieter Out, 12474193
 - Victor van Leuven, 11643978
 
 
