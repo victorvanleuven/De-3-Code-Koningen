@@ -1,18 +1,19 @@
 import argparse
-import loader
-import solve_circuit
-from circuit import Circuit
+from code.classes.circuit import Circuit
 import csv
-import visualization
+import code.visualisation.visualization as visualization
+from code.classes.netlist import Netlist
+from code.classes.grid import Grid
+from code.algorithms.baseline import solvecircuit_baseline
 
-def main(grid, netlist, output, visualisation):
-    "usage: python3 main.py example/print_0.csv example/netlist_1.csv test/test.csv test/test.png"
-    grid_name = grid
-    netlist_name = netlist
-    netlist = loader.load_netlist(netlist)
-    grid = loader.load_grid(grid)
+def main(grid_file, netlist_file, output, visualisation):
+    "usage: python3 main.py data/example/print_0.csv data/example/netlist_1.csv test/test.csv test/test.png"
+    grid_name = grid_file
+    netlist_name = netlist_file
+    netlist = Netlist(netlist_file)
+    grid = Grid(grid_file)
 
-    solved = solve_circuit.actualsolvecircuit(netlist, grid)
+    solved = solvecircuit_baseline(netlist, grid)
     circuit = Circuit(solved)
     headers = ["net", "wires"]
 
@@ -38,13 +39,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description = "Generates connections between gates in a chip with the lowest cost possible.")
 
     # Adding arguments
-    parser.add_argument("print", help = "print file (csv)")
-    parser.add_argument("netlist", help = "netlist file (csv)")
-    parser.add_argument("output", help = "output file (csv)")
-    parser.add_argument("visualisation", help = "visualization (png)")
+    parser.add_argument("print_file", help = "print file (csv)")
+    parser.add_argument("netlist_file", help = "netlist file (csv)")
+    parser.add_argument("output_file", help = "output file (csv)")
+    parser.add_argument("visualisation_file", help = "visualization (png)")
 
     # Read arguments from command line
     args = parser.parse_args()
 
     # Run main with provide arguments
-    main(args.print, args.netlist, args.output, args.visualisation)
+    main(args.print_file, args.netlist_file, args.output_file, args.visualisation_file)
