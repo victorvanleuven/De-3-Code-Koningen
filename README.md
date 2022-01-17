@@ -13,16 +13,20 @@ python3 main.py gate_coordinates netlist output_csv output_png
 ```
 Waarbij 'gate_coordinates' de naam is van de file waarin de coördinaten zijn gegeven van de gates. 'netlist' is de naam van file waar de netlist in staat, waar is aangegeven welke gates met elkaar in connectie zijn. De output_csv is de naam van een csv bestand waar de gebruiker wil dat de paden tussen de gaten worden opgeslagen. Die worden vervolgens gevisualiseerd en opgeslagen als een png bestand met de naam die wordt gegeven in het vierde argument. 
 
+### Structuur
+
+Hieronder is een lijst van de verschillende mappen en files die voorkomen in dit project met een korte beschrijving.
+
+* /code: bevat alle code van dit project.
+  * /code/algorithms: bevat de code voor de verschillende algoritmes. (baseline, eerste en tweede algoritme)
+  * /code/classes: bevat de benodigde classes voor deze case.
+  * /code/visualisation: bevat de code voor de visualisatie van het grid.
+  * /code/helpers: bevat de verschillende helper functies.
+* /data: bevat de verschillende data bestanden om het programma in te laden en te visualiseren.
+* main.py: de code waarbij alles samenkomt en die uiteindelijk wordt aangeroepen in de terminal. 
+
+
 ### De 3 Code-Koningen / Auteurs
 - Jesse Mastenbroek, 12413437
 - Pieter Out, 12474193
 - Victor van Leuven, 11643978
-
-
-*outline:*
-- _data_
-- _grid.py (grid class)_
-- _netlist.py (netlist class)_
-- _circuit.py (class consisting of net with wires as in example/output.csv)_
-    - _has Circuit.cost() as method_
-- generate_net.py (_generates net given netlist and grid._)
