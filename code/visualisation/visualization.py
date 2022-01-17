@@ -31,11 +31,12 @@ def visualize_grid(filename_visualization, filename_grid, filename_solution):
         
         # 3d plot voor als er meerdere lagen zijn
         
-        for key in gates.keys():
-            x = gates[key][0]
-            y = gates[key][1]
-            ax.plot(x,y,0,".")
-            ax.text(x,y,0, key)
+        if len(gates.keys()) < 20:
+            for key in gates.keys():
+                x = gates[key][0]
+                y = gates[key][1]
+                ax.plot(x,y,0,".")
+                ax.text(x,y,0, key)
         ax.plot(x_list, y_list, z_list)
 
         # # 2d plot als er niet meerdere lagen zijn
