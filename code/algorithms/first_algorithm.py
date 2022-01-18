@@ -3,8 +3,10 @@ first algorithm based on the baseline, but avoiding overlap and even intersectio
 """
 
 import numpy as np
+import random
 
 def list_compare(list1, list2):
+    print(list1, list2)
     comparison = list1 == list2
     return comparison.all()
 
@@ -14,25 +16,35 @@ def list_in(list, list_of_lists):
             return True
     return False
 
-def greedy_move(start, destination, invalid_steps):
+def greedy_move(start, destination, invalid_steps, start_gate):
     start = np.array(start)
     destination = np.array(destination)
+    start_gate = np.array(start_gate)
 
-    for direction in range(3):
+    if list_compare(start, destination):
+        return(np.array((0,0,0)))
+
+    # richtingen = [0, 1, 2]
+    # weigths = [1, 1, 5]
+    
+    directions = random.sample(range(3), 3)
+    for direction in directions:
         adjustment = np.array((0,0,0))
         if start[direction] > destination[direction]:
             adjustment[direction] -= 1
-            if not list_in(start + adjustment, invalid_steps):
+            if not list_in(start + adjustment, invalid_steps) and not list_compare(start_gate, start + adjustment):
                 return adjustment
         elif start[direction] < destination[direction]:
             adjustment[direction] += 1
-            if not list_in(start + adjustment, invalid_steps):
+            if not list_in(start + adjustment, invalid_steps) and not list_compare(start_gate, start + adjustment):
                 return adjustment
 
-    # if we can't move more towards our destination, try to go up
-    adjustment = np.array((0,0,1))
-    if not list_in(start + adjustment, invalid_steps):
-        return adjustment
+    # if we can't move more towards our destination, force to go other valid direction
+    for direction in reversed(range(3)):
+        adjustment = np.array((0,0,0))
+        adjustment[direction] = 1
+        if not list_in(start + adjustment, invalid_steps) and not list_compare(start_gate, start + adjustment):
+            return adjustment
 
     return np.array((0,0,0))
 
@@ -58,17 +70,12 @@ def actualsolvecircuit(netlist, grid):
         path = [coords_gate_a]
         still_going = True
 
+
         while still_going:
-            adjustment = greedy_move(step, coords_gate_b, invalid_positions)
+            adjustment = greedy_move(step, coords_gate_b, invalid_positions, coords_gate_a)
 
             comparison = adjustment == np.array((0,0,0))
             if comparison.all() == True:
-                print ("comparison")
-                print(comparison)
-                print("position")
-                print("step + adjustment")
-                print(step+adjustment)
-                print("") 
                 still_going = False
 
             step = step + adjustment
