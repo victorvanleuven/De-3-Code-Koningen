@@ -5,8 +5,21 @@ first algorithm based on the baseline, but avoiding overlap and even intersectio
 import numpy as np
 import random
 
+LAYERS = 7
+
+def check_max_value(coord, grid):
+    max_min_xy = grid.get_maxmin_xy()
+
+    if max_min_xy["max_x"] + 1 < coord[0] or max_min_xy["min_x"] - 1 > coord[0]:
+        return False
+    elif max_min_xy["max_y"] + 1 < coord[1] or max_min_xy["min_y"] - 1 > coord[1]:
+        return False
+    elif coord[2] > LAYERS or coord[2] < 0:
+        return False
+    
+    return True
+
 def list_compare(list1, list2):
-    print(list1, list2)
     comparison = list1 == list2
     return comparison.all()
 
@@ -16,7 +29,13 @@ def list_in(list, list_of_lists):
             return True
     return False
 
-def greedy_move(start, destination, invalid_steps, start_gate):
+def greedy_move(start, destination, invalid_steps, start_gate, grid):
+    
+    all_gates = set(grid.gate_dict.values())
+    current_gates = [start_gate, destination]
+    forbidden_gates = list(all_gates.difference(current_gates))
+    invalid_steps = invalid_steps + forbidden_gates
+
     start = np.array(start)
     destination = np.array(destination)
     start_gate = np.array(start_gate)
@@ -26,24 +45,26 @@ def greedy_move(start, destination, invalid_steps, start_gate):
 
     # richtingen = [0, 1, 2]
     # weigths = [1, 1, 5]
-    
-    directions = random.sample(range(3), 3)
-    for direction in directions:
+
+    # directions = random.sample(range(3), 3)
+    for direction in range(3):
         adjustment = np.array((0,0,0))
         if start[direction] > destination[direction]:
             adjustment[direction] -= 1
-            if not list_in(start + adjustment, invalid_steps) and not list_compare(start_gate, start + adjustment):
+            if not list_in(start + adjustment, invalid_steps) and not list_compare(start_gate, start + adjustment) and check_max_value(start + adjustment, grid):
                 return adjustment
         elif start[direction] < destination[direction]:
             adjustment[direction] += 1
-            if not list_in(start + adjustment, invalid_steps) and not list_compare(start_gate, start + adjustment):
+            if not list_in(start + adjustment, invalid_steps) and not list_compare(start_gate, start + adjustment) and check_max_value(start + adjustment, grid):
                 return adjustment
 
     # if we can't move more towards our destination, force to go other valid direction
-    for direction in reversed(range(3)):
+    # directions = random.sample(range(3), 3)
+    # print(directions)
+    for direction in range(3):
         adjustment = np.array((0,0,0))
         adjustment[direction] = 1
-        if not list_in(start + adjustment, invalid_steps) and not list_compare(start_gate, start + adjustment):
+        if not list_in(start + adjustment, invalid_steps) and not list_compare(start_gate, start + adjustment) and check_max_value(start + adjustment, grid):
             return adjustment
 
     return np.array((0,0,0))
@@ -71,12 +92,12 @@ def actualsolvecircuit(netlist, grid):
         still_going = True
 
 
-        while still_going:
-            adjustment = greedy_move(step, coords_gate_b, invalid_positions, coords_gate_a)
+        while True:
+            adjustment = greedy_move(step, coords_gate_b, invalid_positions, coords_gate_a, grid)
 
             comparison = adjustment == np.array((0,0,0))
             if comparison.all() == True:
-                still_going = False
+                break
 
             step = step + adjustment
             if not list_in(step, gate_coords): 
