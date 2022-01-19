@@ -42,11 +42,7 @@ def greedy_move(start, destination, invalid_steps, start_gate, grid):
 
     if list_compare(start, destination):
         return(np.array((0,0,0)))
-
-    # richtingen = [0, 1, 2]
-    # weigths = [1, 1, 5]
-
-    # directions = random.sample(range(3), 3)
+        
     for direction in range(3):
         adjustment = np.array((0,0,0))
         if start[direction] > destination[direction]:
@@ -59,8 +55,6 @@ def greedy_move(start, destination, invalid_steps, start_gate, grid):
                 return adjustment
 
     # if we can't move more towards our destination, force to go other valid direction
-    # directions = random.sample(range(3), 3)
-    # print(directions)
     for direction in range(3):
         adjustment = np.array((0,0,0))
         adjustment[direction] = 1
