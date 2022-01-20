@@ -1,44 +1,90 @@
 """
-baseline algorithms that simply generates an incorrect solution by immediately connecting gates without trying to avoid overlapping
+The baseline generates a random valid path.
 """
 
 import numpy as np
+import random
 
+LAYERS = 7
 
-def try_move(start, destination, direction):
-    "try to move in a given direction, for example x or y"
-    new_step = start
-    if start[direction] > destination[direction]:
-        new_step[direction] -= 1
-    elif start[direction] < destination[direction]:
-        new_step[direction] += 1
-    # if x and y are good, go down to base layer
-    elif start[0] == destination[0] and destination[1] == destination[1] and start[2] != 0:
-        new_step[2] -= 1
+def check_max_value(coord, grid):
+    max_min_xy = grid.get_maxmin_xy()
 
-    return new_step
+    if max_min_xy["max_x"] + 1 < coord[0] or max_min_xy["min_x"] - 1 > coord[0]:
+        return False
+    elif max_min_xy["max_y"] + 1 < coord[1] or max_min_xy["min_y"] - 1 > coord[1]:
+        return False
+    elif coord[2] > LAYERS or coord[2] < 0:
+        return False
+    
+    return True
 
+def list_compare(list1, list2):
+    comparison = list1 == list2
+    return comparison.all()
 
-def solvecircuit_baseline(netlist, grid):
-    # eerste versie, lost op met zo kort mogelijke routes maar niet perse kloppend (overlap)
+def list_in(list, list_of_lists):
+        for other_list in list_of_lists:
+            if list_compare(list, other_list):
+                return True
+        return False
+
+def random_move(start, destination, used_lines, grid):
+    
+    all_gates = set(grid.gate_dict.values())
+    forbidden_gates = set(all_gates) - {destination}
+
+    start = np.array(start)
+    destination = np.array(destination)
+
+    if list_compare(start, destination):
+        return(np.array((0,0,0)))
+
+    axes = random.sample(range(3), 3)
+    for axis in axes:
+        directions = random.sample([-1, 1], 2)
+        for direction in directions:
+            adjustment = np.array((0,0,0))
+            adjustment[axis] = direction
+            line = {tuple(start), tuple(start + adjustment)}
+            if not line in used_lines and not list_in(start + adjustment, forbidden_gates) and check_max_value(start + adjustment, grid):
+                return adjustment
+
+    return np.array((0,0,0))
+
+def solve_circuit_baseline(netlist, grid):
+    netlist = netlist.connections
+    gates = grid.gate_dict
     connection_path_dict = {}
-    gate_coords = grid.gate_dict
+    used_lines = []
 
-    for connection in netlist.connections:
+    for connection in netlist:
+
+        # get gates and their coordinates
         gate_a = connection[0]
         gate_b = connection[1]
 
-        coords_gate_a = gate_coords[gate_a]
-        coords_gate_b = gate_coords[gate_b]
+        # retrieve gate coordinates as tuples
+        coords_gate_a = gates[gate_a]
+        coords_gate_b = gates[gate_b]
         
-        path = []
+        # start at gate_a and build a path from gate_a to gate_b
         step = np.array(coords_gate_a)
-        path.append(tuple(step))
-        for coord in range(3):
-            while step[coord] != coords_gate_b[coord]:
-                step = try_move(step, coords_gate_b, coord)
-                path.append(tuple(step))
+        path = [coords_gate_a]
 
+        while True:
+            adjustment = random_move(step, coords_gate_b, used_lines, grid)
+
+            comparison = adjustment == np.array((0,0,0))
+            if comparison.all() == True:
+                break
+
+            next_step = tuple(step + adjustment)
+            line = {tuple(step), next_step}
+            used_lines.append(line)
+            path.append(next_step)
+            step = next_step
+        
         connection_path_dict[connection] = path
-    
+
     return connection_path_dict

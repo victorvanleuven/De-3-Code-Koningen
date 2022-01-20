@@ -4,7 +4,7 @@ import csv
 import code.visualisation.visualization as visualization
 from code.classes.netlist import Netlist
 from code.classes.grid import Grid
-from code.algorithms.baseline import solvecircuit_baseline
+from code.algorithms.baseline import solve_circuit_baseline
 from code.algorithms.first_algorithm import actualsolvecircuit
 
 def check(connection_path_dict, grid):
@@ -26,10 +26,10 @@ def main(grid_file, netlist_file, output, visualisation):
     # try a 1000 times, pick correct solution with lowest cost
     lowest_cost = 10000000000000
     best_solution = []
-    for tries in range(1000):
+    for tries in range(10000):
         print(tries)
         print(best_solution)
-        solved = actualsolvecircuit(netlist, grid)
+        solved = solve_circuit_baseline(netlist, grid)
         if check(solved, grid):
             cost = Circuit(solved).cost()
             if cost < lowest_cost:
