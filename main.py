@@ -7,6 +7,15 @@ from code.classes.grid import Grid
 from code.algorithms.baseline import solvecircuit_baseline
 from code.algorithms.first_algorithm import actualsolvecircuit
 
+def check(connection_path_dict, grid):
+    gate_dict = grid.gate_dict
+    for connection in connection_path_dict.keys():
+        end = gate_dict[connection[1]]
+        path = connection_path_dict[connection]
+        if path[-1][0] != end[0] or path[-1][1] != end[1] or path[-1][2] != end[2]:
+            return False
+    return True
+
 def main(grid_file, netlist_file, output, visualisation):
     "usage: python3 main.py data/example/print_0.csv data/example/netlist_1.csv test/test.csv test/test.png"
     grid_name = grid_file
@@ -14,7 +23,25 @@ def main(grid_file, netlist_file, output, visualisation):
     netlist = Netlist(netlist_file)
     grid = Grid(grid_file)
 
-    solved = actualsolvecircuit(netlist, grid)
+    # try a 1000 times, pick correct solution with lowest cost
+    lowest_cost = 10000000000000
+    best_solution = []
+    for tries in range(10000):
+        print(tries)
+        print(best_solution)
+        solved = actualsolvecircuit(netlist, grid)
+        if check(solved, grid):
+            cost = Circuit(solved).cost()
+            if cost < lowest_cost:
+                lowest_cost = cost
+                best_solution.clear()
+                best_solution.append(solved)
+        
+    if len(best_solution) == 0:
+        print("No solution found")
+        return 0
+    
+    solved = best_solution[0]
     circuit = Circuit(solved)
     headers = ["net", "wires"]
 
