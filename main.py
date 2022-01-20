@@ -5,7 +5,18 @@ import code.visualisation.visualization as visualization
 from code.classes.netlist import Netlist
 from code.classes.grid import Grid
 from code.algorithms.baseline import solve_circuit_baseline
-from code.algorithms.first_algorithm import actualsolvecircuit
+from code.algorithms.cost_first_algoritm import actualsolvecircuit
+
+
+def evaluate(connection_path_dict, grid):
+    gate_dict = grid.gate_dict
+    counter = 0
+    for connection in connection_path_dict.keys():
+        end = gate_dict[connection[1]]
+        path = connection_path_dict[connection]
+        if path[-1][0] == end[0] and path[-1][1] == end[1] and path[-1][2] == end[2]:
+            counter += 1
+    return counter
 
 def check(connection_path_dict, grid):
     gate_dict = grid.gate_dict
@@ -25,12 +36,16 @@ def main(grid_file, netlist_file, output, visualisation):
 
     # try a 1000 times, pick correct solution with lowest cost
     lowest_cost = 10000000000000
+    most_connections = 0
     best_solution = []
-    for tries in range(10000):
+    for tries in range(1000):
         print(tries)
         print(best_solution)
-        solved = solve_circuit_baseline(netlist, grid)
-        if check(solved, grid):
+        solved = actualsolvecircuit(netlist, grid)
+
+        connections_made = evaluate(solved, grid)
+        if connections_made >= most_connections:
+            most_connections = connections_made
             cost = Circuit(solved).cost()
             if cost < lowest_cost:
                 lowest_cost = cost
@@ -40,6 +55,7 @@ def main(grid_file, netlist_file, output, visualisation):
     if len(best_solution) == 0:
         print("No solution found")
         return 0
+    print(f"Reached {connections_made} connections")
     
     solved = best_solution[0]
     circuit = Circuit(solved)
