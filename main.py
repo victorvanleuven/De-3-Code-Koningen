@@ -26,7 +26,7 @@ def main(grid_file, netlist_file, output, visualisation):
     # try a 1000 times, pick correct solution with lowest cost
     lowest_cost = 10000000000000
     best_solution = []
-    for tries in range(10000):
+    for tries in range(100000):
         print(tries)
         print(best_solution)
         solved = solve_circuit_baseline(netlist, grid)
