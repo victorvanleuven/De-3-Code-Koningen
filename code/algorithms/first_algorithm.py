@@ -65,7 +65,10 @@ def greedy_move(start, destination, used_lines, grid):
 
     return np.array((0,0,0))
 
-def actualsolvecircuit(netlist, grid):
+def greedy_distance(netlist, grid):
+    """
+    keep on making the move that minimizes the distance to our destination, choose randomly between best moves
+    """
     netlist = netlist.connections
     gates = grid.gate_dict
     connection_path_dict = {}

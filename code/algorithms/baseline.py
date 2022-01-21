@@ -52,7 +52,7 @@ def random_move(start, destination, used_lines, grid):
 
     return np.array((0,0,0))
 
-def solve_circuit_baseline(netlist, grid):
+def random_algo(netlist, grid):
     netlist = netlist.connections
     gates = grid.gate_dict
     connection_path_dict = {}

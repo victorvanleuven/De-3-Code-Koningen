@@ -80,7 +80,10 @@ def greedy_intersection(start, destination, used_lines, grid):
     return random.choices(adjustments, weights, k=1)[0]
     
 
-def greedy_move(start, destination, used_lines, grid):
+def greedy_cost(start, destination, used_lines, grid):
+    """
+    keep on making the move that minimizes the cost (INTERSECTION_PENALTY + WRONG_LINE_PENALTY), choose randomly between cheapest moves
+    """
     
     all_gates = set(grid.gate_dict.values())
     forbidden_gates = set(all_gates) - {destination}
