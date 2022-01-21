@@ -10,7 +10,7 @@ from code.algorithms.cost_first_algoritm import greedy_cost
 from typing import Callable
 import datetime
 
-TRIES = 10000
+TRIES = 100
 
 def evaluate(connection_path_dict, grid):
     gate_dict = grid.gate_dict
@@ -57,7 +57,7 @@ def main(chip_a, netlist_b, algorithm: Callable, output, visualisation):
     # try a 1000 times, pick correct solution with lowest cost
     lowest_cost = 10000000000000
     most_connections = 0
-    best_solution = []
+    best_solution = None
 
     algo_dict = {"random_algo": random_algo, "greedy_distance": greedy_distance, "greedy_cost": greedy_cost}
     algorithm = algo_dict[algorithm]
@@ -71,23 +71,21 @@ def main(chip_a, netlist_b, algorithm: Callable, output, visualisation):
             cost = Circuit(solved).cost()
             if cost < lowest_cost:
                 lowest_cost = cost
-                best_solution.clear()
-                best_solution.append(solved)
-        
-    if len(best_solution) == 0:
+                best_solution = solved
+ 
+    if best_solution == None:
         print("No solution found")
         return 0
 
-    connections_made = evaluate(best_solution[0], grid)
+    connections_made = evaluate(best_solution, grid)
     print(f"Reached {connections_made} connections")
-    
-    solved = best_solution[0]
-    circuit = Circuit(solved)
+
+    circuit = Circuit(best_solution)
     headers = ["net", "wires"]
 
     new_dict = []
-    for connection in solved.keys():
-        new_row = {"net": connection, "wires": solved[connection]}
+    for connection in best_solution.keys():
+        new_row = {"net": connection, "wires": best_solution[connection]}
         new_dict.append(new_row)
 
     new_dict.append({"net": f"{chip_a}_{netlist_b[0:3]+netlist_b[-2:]}", "wires": circuit.cost()})

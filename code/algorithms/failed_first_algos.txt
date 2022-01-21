@@ -108,3 +108,50 @@ def oud(netlist, grid):
         connection_path_dict[connection] = path
     
     return connection_path_dict
+
+def greedy_intersection(start, destination, used_lines, grid):
+    all_gates = set(grid.gate_dict.values())
+    forbidden_gates = set(all_gates) - {destination}
+
+    start = np.array(start)
+    destination = np.array(destination)
+
+    if list_compare(start, destination):
+        return(np.array((0,0,0)))
+    
+    points_used = []
+
+    for line in used_lines:
+        for point in line:
+            points_used.append(point)
+    points_used = set(points_used)
+    
+    weights = []
+    adjustments = []
+
+    for axis in range(3):
+
+        adjustment_cost = 1
+
+        for direction in [-1, 1]:
+            adjustment = np.array((0,0,0))
+            adjustment[axis] = direction
+            line = {tuple(start), tuple(start + adjustment)}
+            if not line in used_lines and not list_in(start + adjustment, forbidden_gates) and check_max_value(start + adjustment, grid):
+                if list_compare(start + adjustment, destination):
+                    return adjustment
+                adjustments.append(adjustment)
+                # give penalty for making intersections
+                if tuple(start + adjustment) in points_used:
+                    adjustment_cost += INTERSECTION_PENALTY
+                if start[axis] < destination[axis] and direction == -1:
+                    adjustment_cost += WRONG_LINE_PENALTY
+                elif start[axis] > destination[axis] and direction == 1:
+                    adjustment_cost += WRONG_LINE_PENALTY
+
+                weights.append(1/adjustment_cost)
+            
+    if len(adjustments) == 0:
+        return np.array((0,0,0))
+
+    return random.choices(adjustments, weights, k=1)[0]
