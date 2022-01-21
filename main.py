@@ -57,6 +57,8 @@ def main(grid_file, netlist_file, output, visualisation):
     if len(best_solution) == 0:
         print("No solution found")
         return 0
+        
+    connections_made = evaluate(best_solution[0], grid)
     print(f"Reached {connections_made} connections")
 
     
