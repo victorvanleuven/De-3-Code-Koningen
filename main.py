@@ -6,7 +6,7 @@ from code.classes.netlist import Netlist
 from code.classes.grid import Grid
 from code.algorithms.baseline import solve_circuit_baseline
 from code.algorithms.cost_first_algoritm import actualsolvecircuit
-
+import time
 
 def evaluate(connection_path_dict, grid):
     gate_dict = grid.gate_dict
@@ -28,6 +28,7 @@ def check(connection_path_dict, grid):
     return True
 
 def main(grid_file, netlist_file, output, visualisation):
+    t0 = time.time()
     "usage: python3 main.py data/example/print_0.csv data/example/netlist_1.csv test/test.csv test/test.png"
     grid_name = grid_file
     netlist_name = netlist_file
@@ -38,9 +39,8 @@ def main(grid_file, netlist_file, output, visualisation):
     lowest_cost = 10000000000000
     most_connections = 0
     best_solution = []
-    for tries in range(1000):
+    for tries in range(10000):
         print(tries)
-        print(best_solution)
         solved = actualsolvecircuit(netlist, grid)
 
         connections_made = evaluate(solved, grid)
@@ -51,11 +51,14 @@ def main(grid_file, netlist_file, output, visualisation):
                 lowest_cost = cost
                 best_solution.clear()
                 best_solution.append(solved)
-        
+
+    t1 = time.time()
+    print(t1 - t0)    
     if len(best_solution) == 0:
         print("No solution found")
         return 0
     print(f"Reached {connections_made} connections")
+
     
     solved = best_solution[0]
     circuit = Circuit(solved)
