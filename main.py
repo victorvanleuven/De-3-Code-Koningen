@@ -57,7 +57,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     most_connections = 0
     best_solution = None
 
-    algo_dict = {"random_algo": random_algo, "greedy_distance": greedy_distance, "greedy_cost": greedy_cost}
+    algo_dict = {"random_algo": random_algo, "greedy_distance": greedy_distance}
     algorithm = algo_dict[algorithm]
     for tries in range(TRIES):
         print(tries)
