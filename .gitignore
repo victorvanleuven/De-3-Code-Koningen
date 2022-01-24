@@ -1,5 +1,7 @@
 # ignore test files
 test/
+__pycache__
+algorithms/__pycache__
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

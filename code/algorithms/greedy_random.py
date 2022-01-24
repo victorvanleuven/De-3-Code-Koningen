@@ -29,7 +29,7 @@ def move(start, destination, used_lines, grid):
                 return adjustment
 
     # if we can't move more towards our destination, force to go other valid direction
-    directions = np.random.choice(range(3),3,replace=False, p=[1/9,1/9,7/9])    # dit ipv random.sample?
+    directions = np.random.choice(range(3),3,replace=False, p=[1/9,1/9,7/9])
     for direction in directions:
         adjustment = np.array((0,0,0))
         adjustment[direction] = 1
