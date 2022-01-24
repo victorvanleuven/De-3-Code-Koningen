@@ -6,7 +6,6 @@ from code.classes.netlist import Netlist
 from code.classes.grid import Grid
 from code.algorithms.baseline import random_algo
 from code.algorithms.first_algorithm import greedy_distance
-from code.algorithms.cost_first_algoritm import greedy_cost
 from typing import Callable
 import datetime
 
