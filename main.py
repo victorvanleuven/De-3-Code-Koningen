@@ -39,7 +39,7 @@ def main(grid_file, netlist_file, output, visualisation):
     lowest_cost = 10000000000000
     most_connections = 0
     best_solution = []
-    for tries in range(10000):
+    for tries in range(100):
         print(tries)
         solved = actualsolvecircuit(netlist, grid)
 
