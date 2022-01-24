@@ -6,10 +6,11 @@ from code.classes.netlist import Netlist
 from code.classes.grid import Grid
 from code.algorithms import baseline
 from code.algorithms import greedy_random
+from code.algorithms import second_algorithm
 from typing import Callable
 import datetime
 
-TRIES = 100
+TRIES = 1
 
 def evaluate(connection_path_dict, grid):
     gate_dict = grid.gate_dict
@@ -20,7 +21,6 @@ def evaluate(connection_path_dict, grid):
         if path[-1][0] == end[0] and path[-1][1] == end[1] and path[-1][2] == end[2]:
             counter += 1
     return counter
-
 
 def check(connection_path_dict, grid):
     gate_dict = grid.gate_dict
@@ -57,7 +57,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     most_connections = 0
     best_solution = None
 
-    algo_dict = {"baseline": baseline.solve, "greedy_random": greedy_random.solve}
+    algo_dict = {"baseline": baseline.solve, "greedy_random": greedy_random.solve, "second": second_algorithm.solve}
     algorithm = algo_dict[algorithm]
     for tries in range(TRIES):
         print(tries)
