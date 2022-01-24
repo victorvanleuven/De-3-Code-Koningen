@@ -33,24 +33,23 @@ def check(connection_path_dict, grid):
     return True
 
 
-def main(chip_a, netlist_b, algorithm: Callable, output, visualisation):
+def main(chip, netlist, algorithm: Callable, output, visualisation):
     """
-    usage: python3 main.py chip_a netlist_b algorithm output visualisation
-    netlist_b should be in the folder chip_a
-    algorithm should be one of the following: random_algo, greedy_distance, greedy_cost
-    output and visualisation are optional and have default values "test/chip_a_netlist_b_datetime.csv"
+    usage: python3 main.py chip_a netlist_b algorithm [output] [visualisation]
+    
+    choose one of the following algorithms: random_algo, greedy_distance, greedy_cost
+    output and visualisation are optional and have default file names "test/chip_a_netlist_b_datetime.csv"
     and "test/chip_a_netlist_b_datetime.png" respectively
     """
-    # main(chip_0, netlist_0) optioneel om naam output en visualisation mee te geven, anders gewoon solution_tijd, viz_tijd in results folder?
     
     if output == None:
-        output = f"test/{chip_a}_{netlist_b}_{datetime.datetime.now()}.csv"
+        output = f"test/{chip}_{netlist}_{datetime.datetime.now()}.csv"
     if visualisation == None:
-        visualisation = f"test/{chip_a}_{netlist_b}_{datetime.datetime.now()}.png"
+        visualisation = f"test/{chip}_{netlist}_{datetime.datetime.now()}.png"
 
 
-    grid_file = f"data/{chip_a}/print_{chip_a[-1]}.csv"
-    netlist_file = f"data/{chip_a}/{netlist_b}.csv"
+    grid_file = f"data/{chip}/print_{chip[-1]}.csv"
+    netlist_file = f"data/{chip}/{netlist}.csv"
     grid = Grid(grid_file)
     netlist = Netlist(netlist_file)
 
@@ -88,7 +87,7 @@ def main(chip_a, netlist_b, algorithm: Callable, output, visualisation):
         new_row = {"net": connection, "wires": best_solution[connection]}
         new_dict.append(new_row)
 
-    new_dict.append({"net": f"{chip_a}_{netlist_b[0:3]+netlist_b[-2:]}", "wires": circuit.cost()})
+    new_dict.append({"net": f"{chip}_{netlist[0:3]+netlist[-2:]}", "wires": circuit.cost()})
 
     with open(output, 'w') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames = headers)
