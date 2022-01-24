@@ -1,7 +1,7 @@
 """
 first algorithm based on the baseline, but avoiding overlap and even intersections by utilising upper layers
 """
-from .helpers import *
+from .helpers import (np, list_compare, random, is_valid)
 
 def greedy_move(start, destination, used_lines, grid):
     

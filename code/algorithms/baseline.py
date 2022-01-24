@@ -1,4 +1,4 @@
-from .helpers import *
+from .helpers import (np, list_compare, random, is_valid)
 
 def random_move(start, destination, used_lines, grid):
     """
