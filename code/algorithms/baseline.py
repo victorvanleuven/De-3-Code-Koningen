@@ -1,6 +1,6 @@
 from .helpers import (np, list_compare, random, is_valid)
 
-def random_move(start, destination, used_lines, grid):
+def move(start, destination, used_lines, grid):
     """
     returns one step move in random direction if possible, else returns np.array of zeroes
     """
@@ -29,7 +29,7 @@ def random_move(start, destination, used_lines, grid):
 
     return np.array((0,0,0))
 
-def random_algo(netlist, grid):
+def solve(netlist, grid):
     netlist = netlist.connections
     gates = grid.gate_dict
     connection_path_dict = {}
@@ -50,7 +50,7 @@ def random_algo(netlist, grid):
         path = [coords_gate_a]
 
         while True:
-            adjustment = random_move(step, coords_gate_b, used_lines, grid)
+            adjustment = move(step, coords_gate_b, used_lines, grid)
 
             comparison = adjustment == np.array((0,0,0))
             if comparison.all() == True:

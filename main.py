@@ -4,8 +4,8 @@ import csv
 import code.visualisation.visualization as visualization
 from code.classes.netlist import Netlist
 from code.classes.grid import Grid
-from code.algorithms.baseline import random_algo
-from code.algorithms.first_algorithm import greedy_distance
+from code.algorithms import baseline
+from code.algorithms import greedy_random
 from typing import Callable
 import datetime
 
@@ -36,7 +36,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     """
     usage: python3 main.py chip_a netlist_b algorithm [output] [visualisation]
     
-    choose one of the following algorithms: random_algo, greedy_distance, greedy_cost
+    choose one of the following algorithms: baseline, greedy_random
     output and visualisation are optional and have default file names "test/chip_a_netlist_b_datetime.csv"
     and "test/chip_a_netlist_b_datetime.png" respectively
     """
@@ -57,7 +57,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     most_connections = 0
     best_solution = None
 
-    algo_dict = {"random_algo": random_algo, "greedy_distance": greedy_distance}
+    algo_dict = {"baseline": baseline.solve, "greedy_random": greedy_random.solve}
     algorithm = algo_dict[algorithm]
     for tries in range(TRIES):
         print(tries)

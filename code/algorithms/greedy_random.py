@@ -3,7 +3,7 @@ first algorithm based on the baseline, but avoiding overlap and even intersectio
 """
 from .helpers import (np, list_compare, random, is_valid)
 
-def greedy_move(start, destination, used_lines, grid):
+def move(start, destination, used_lines, grid):
     
     all_gates = set(grid.gate_dict.values())
     forbidden_gates = set(all_gates) - {destination}
@@ -39,7 +39,7 @@ def greedy_move(start, destination, used_lines, grid):
 
     return np.array((0,0,0))
 
-def greedy_distance(netlist, grid):
+def solve(netlist, grid):
     """
     keep on making the move that minimizes the distance to our destination, choose randomly between best moves
     """
@@ -63,7 +63,7 @@ def greedy_distance(netlist, grid):
         path = [coords_gate_a]
 
         while True:
-            adjustment = greedy_move(step, coords_gate_b, used_lines, grid)
+            adjustment = move(step, coords_gate_b, used_lines, grid)
 
             comparison = adjustment == np.array((0,0,0))
             if comparison.all() == True:
