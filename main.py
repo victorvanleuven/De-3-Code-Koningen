@@ -57,11 +57,16 @@ def main(chip_a, netlist_b, algorithm: Callable, output, visualisation):
     # try a 1000 times, pick correct solution with lowest cost
     lowest_cost = 10000000000000
     most_connections = 0
+    best_solution = None
+
+    algo_dict = {"random_algo": random_algo, "greedy_distance": greedy_distance, "greedy_cost": greedy_cost}
+    algorithm = algo_dict[algorithm]
     for tries in range(TRIES):
         print(tries)
         solved = algorithm(netlist, grid)
 
         connections_made = evaluate(solved, grid)
+        if connections_made >= most_connections:
             most_connections = connections_made
             cost = Circuit(solved).cost()
             if cost < lowest_cost:
