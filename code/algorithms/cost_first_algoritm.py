@@ -1,38 +1,14 @@
 """
 first algorithm based on the baseline, but avoiding overlap and even intersections by utilising upper layers
 """
+from .helpers import *
 
-import numpy as np
-import random
 
-LAYERS = 7
 INTERSECTION_PENALTY = 30000
 WRONG_LINE_PENALTY = 1000
-
-
-def check_max_value(coord, grid):
-    max_min_xy = grid.get_maxmin_xy()
-
-    if max_min_xy["max_x"] + 1 < coord[0] or max_min_xy["min_x"] - 1 > coord[0]:
-        return False
-    elif max_min_xy["max_y"] + 1 < coord[1] or max_min_xy["min_y"] - 1 > coord[1]:
-        return False
-    elif coord[2] > LAYERS or coord[2] < 0:
-        return False
     
-    return True
 
-def list_compare(list1, list2):
-    comparison = list1 == list2
-    return comparison.all()
-
-def list_in(list, list_of_lists):
-        for other_list in list_of_lists:
-            if list_compare(list, other_list):
-                return True
-        return False
-
-def greedy_intersection(start, destination, used_lines, grid):
+def greedy_cost_move(start, destination, used_lines, grid):
     all_gates = set(grid.gate_dict.values())
     forbidden_gates = set(all_gates) - {destination}
 
@@ -60,11 +36,12 @@ def greedy_intersection(start, destination, used_lines, grid):
             adjustment = np.array((0,0,0))
             adjustment[axis] = direction
             line = {tuple(start), tuple(start + adjustment)}
-            if not line in used_lines and not list_in(start + adjustment, forbidden_gates) and check_max_value(start + adjustment, grid):
+            if is_valid(start, adjustment, used_lines, forbidden_gates, grid):
                 if list_compare(start + adjustment, destination):
                     return adjustment
                 adjustments.append(adjustment)
-                # give penalty for making intersections
+
+                # give penalty for making intersections and drifting away from our destination
                 if tuple(start + adjustment) in points_used:
                     adjustment_cost += INTERSECTION_PENALTY
                 if start[axis] < destination[axis] and direction == -1:
@@ -78,47 +55,8 @@ def greedy_intersection(start, destination, used_lines, grid):
         return np.array((0,0,0))
 
     return random.choices(adjustments, weights, k=1)[0]
-    
 
-def greedy_move(start, destination, used_lines, grid):
-    
-    all_gates = set(grid.gate_dict.values())
-    forbidden_gates = set(all_gates) - {destination}
-
-    start = np.array(start)
-    destination = np.array(destination)
-
-    if list_compare(start, destination):
-        return(np.array((0,0,0)))
-
-    directions = random.sample(range(3), 3)
-    for direction in directions:
-        adjustments = []
-        adjustment = np.array((0,0,0))
-        if start[direction] > destination[direction]:
-            adjustment[direction] -= 1
-            line = {tuple(start), tuple(start + adjustment)}
-            if not line in used_lines and not list_in(start + adjustment, forbidden_gates) and check_max_value(start + adjustment, grid):
-                adjustments.append(adjustment)
-
-        elif start[direction] < destination[direction]:
-            adjustment[direction] += 1
-            line = {tuple(start), tuple(start + adjustment)}
-            if not line in used_lines and not list_in(start + adjustment, forbidden_gates) and check_max_value(start + adjustment, grid):
-                adjustments.append(adjustment)
-
-    # if we can't move more towards our destination, force to go other valid direction
-    directions = random.sample(range(3), 3)
-    for direction in directions:
-        adjustment = np.array((0,0,0))
-        adjustment[direction] = 1
-        line = {tuple(start), tuple(start + adjustment)}
-        if not line in used_lines and not list_in(start + adjustment, forbidden_gates) and check_max_value(start + adjustment, grid):
-            adjustments.append(adjustment)
-
-    return np.array((0,0,0))
-
-def actualsolvecircuit(netlist, grid):
+def greedy_cost(netlist, grid):
     netlist = netlist.connections
     gates = grid.gate_dict
     connection_path_dict = {}
@@ -139,7 +77,7 @@ def actualsolvecircuit(netlist, grid):
         path = [coords_gate_a]
 
         while True:
-            adjustment = greedy_intersection(step, coords_gate_b, used_lines, grid)
+            adjustment = greedy_cost_move(step, coords_gate_b, used_lines, grid)
 
             comparison = adjustment == np.array((0,0,0))
             if comparison.all() == True:

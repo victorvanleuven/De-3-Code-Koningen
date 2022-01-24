@@ -1,58 +1,35 @@
-"""
-The baseline generates a random valid path.
-"""
-
-import numpy as np
-import random
-
-LAYERS = 7
-
-def check_max_value(coord, grid):
-    max_min_xy = grid.get_maxmin_xy()
-
-    if max_min_xy["max_x"] + 1 < coord[0] or max_min_xy["min_x"] - 1 > coord[0]:
-        return False
-    elif max_min_xy["max_y"] + 1 < coord[1] or max_min_xy["min_y"] - 1 > coord[1]:
-        return False
-    elif coord[2] > LAYERS or coord[2] < 0:
-        return False
-    
-    return True
-
-def list_compare(list1, list2):
-    comparison = list1 == list2
-    return comparison.all()
-
-def list_in(list, list_of_lists):
-        for other_list in list_of_lists:
-            if list_compare(list, other_list):
-                return True
-        return False
+from .helpers import *
 
 def random_move(start, destination, used_lines, grid):
-    
+    """
+    returns one step move in random direction if possible, else returns np.array of zeroes
+    """
+
+    # make sure we don't cross gates in our path
     all_gates = set(grid.gate_dict.values())
     forbidden_gates = set(all_gates) - {destination}
 
     start = np.array(start)
     destination = np.array(destination)
 
+    # don't move if we are at our destination
     if list_compare(start, destination):
         return(np.array((0,0,0)))
-
+    
+    # go over moves in all directions in random order
     axes = random.sample(range(3), 3)
     for axis in axes:
         directions = random.sample([-1, 1], 2)
         for direction in directions:
             adjustment = np.array((0,0,0))
             adjustment[axis] = direction
-            line = {tuple(start), tuple(start + adjustment)}
-            if not line in used_lines and not list_in(start + adjustment, forbidden_gates) and check_max_value(start + adjustment, grid):
+
+            if is_valid(start, adjustment, used_lines, forbidden_gates, grid):
                 return adjustment
 
     return np.array((0,0,0))
 
-def solve_circuit_baseline(netlist, grid):
+def random_algo(netlist, grid):
     netlist = netlist.connections
     gates = grid.gate_dict
     connection_path_dict = {}
