@@ -50,7 +50,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     grid_file = f"data/{chip}/print_{chip[-1]}.csv"
     netlist_file = f"data/{chip}/{netlist}.csv"
     grid = Grid(grid_file)
-    netlist = Netlist(netlist_file)
+    netlist_to_solve = Netlist(netlist_file)
 
     # try a 1000 times, pick correct solution with lowest cost
     lowest_cost = 10000000000000
@@ -61,7 +61,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     algorithm = algo_dict[algorithm]
     for tries in range(TRIES):
         print(tries)
-        solved = algorithm(netlist, grid)
+        solved = algorithm(netlist_to_solve, grid)
 
         connections_made = evaluate(solved, grid)
         if connections_made >= most_connections:
