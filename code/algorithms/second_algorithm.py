@@ -3,6 +3,7 @@ A* algoritme om route met laagste kosten (Circuit.cost()) te vinden, gebaseerd o
 Greedy met look ahead
 """
 
+from re import sub
 from .helpers import (np, list_compare, random, is_valid)
 
 def move(start, destination, used_lines, grid):
@@ -48,7 +49,7 @@ def solve(netlist, grid):
     netlist = netlist.connections
     gates = grid.gate_dict
     connection_path_dict = {}
-    used_lines = []
+    used_lines = {}
 
     for connection in netlist:
 
@@ -66,15 +67,26 @@ def solve(netlist, grid):
         tries = 0
 
         while True:
-            adjustment = move(step, coords_gate_b, used_lines, grid)
+            used_lines_values = used_lines.values()
+            used_lines_list = []
+            for sublist in used_lines_values:
+                for item in sublist:
+                    used_lines_list.append(item)
+
+
+            adjustment = move(step, coords_gate_b, used_lines_list, grid)
             
             if type(adjustment) != np.ndarray:
                 # path.clear()
                 path = [coords_gate_a]
                 step = np.array(coords_gate_a)
+                used_lines[connection] = []
+                used_lines_values = used_lines.values()
                 if tries == 100:
                     tries = 0
-                    
+                    break
+                    # netlist.append(connection_path_dict.keys())
+                    # connection_path_dict.clear()    
                 tries += 1
                 # print(tries)
                 continue
@@ -85,9 +97,10 @@ def solve(netlist, grid):
 
             next_step = tuple(step + adjustment)
             line = {tuple(step), next_step}
-            used_lines.append(line)
+
+            used_lines.setdefault(connection, []).append(line)
+            # used_lines[connection] = line
             path.append(next_step)
-            print(connection)
             # print(path)
             step = next_step
         
