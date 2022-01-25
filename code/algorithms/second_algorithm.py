@@ -50,8 +50,11 @@ def solve(netlist, grid):
     gates = grid.gate_dict
     connection_path_dict = {}
     used_lines = {}
+    iteration_count = 0
+
 
     for connection in netlist:
+        iteration_count += 1
 
         # get gates and their coordinates
         gate_a = connection[0]
@@ -76,19 +79,23 @@ def solve(netlist, grid):
 
             adjustment = move(step, coords_gate_b, used_lines_list, grid)
             
+
             if type(adjustment) != np.ndarray:
                 # path.clear()
                 path = [coords_gate_a]
                 step = np.array(coords_gate_a)
                 used_lines[connection] = []
-                used_lines_values = used_lines.values()
                 if tries == 100:
                     tries = 0
-                    break
-                    # netlist.append(connection_path_dict.keys())
-                    # connection_path_dict.clear()    
+                    used_lines = {}
+                    for connection in connection_path_dict.keys():
+                        netlist.append(connection)
+
+                    # insert current connection to next spot in netlist to try again
+                    netlist.insert(iteration_count - 1, connection)
+                    connection_path_dict.clear()
+                    continue
                 tries += 1
-                # print(tries)
                 continue
 
             comparison = adjustment == np.array((0,0,0))
@@ -105,6 +112,5 @@ def solve(netlist, grid):
             step = next_step
         
         connection_path_dict[connection] = path
-
 
     return connection_path_dict
