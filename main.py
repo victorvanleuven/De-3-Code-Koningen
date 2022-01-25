@@ -10,7 +10,7 @@ from code.algorithms import second_algorithm
 from typing import Callable
 import datetime
 
-TRIES = 5000
+TRIES = 10000
 
 def evaluate(connection_path_dict, grid):
     gate_dict = grid.gate_dict
