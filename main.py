@@ -41,10 +41,11 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     output and visualisation are optional and have default file names "test/chip_a_netlist_b_datetime.csv"
     and "test/chip_a_netlist_b_datetime.png" respectively
     """
+    timestamp = str(datetime.datetime.now())[5:16]
     if output == None:
-        output = f"test/{chip}_{netlist}_{datetime.datetime.now()}.csv"
+        output = f"test/{algorithm}_{chip}_{netlist}[{timestamp}].csv"
     if visualisation == None:
-        visualisation = f"test/{chip}_{netlist}_{datetime.datetime.now()}.png"
+        visualisation = f"test/{algorithm}_{chip}_{netlist}[{timestamp}].png"
 
 
     grid_file = f"data/{chip}/print_{chip[-1]}.csv"
