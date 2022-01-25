@@ -11,7 +11,7 @@ from typing import Callable
 import datetime
 import time
 
-RUNS = 100
+RUNS = 10000
 
 def evaluate(connection_path_dict, grid):
     gate_dict = grid.gate_dict
