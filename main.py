@@ -11,7 +11,7 @@ from typing import Callable
 import datetime
 import time
 
-RUNS = 10000
+RUNS = 100
 
 def evaluate(connection_path_dict, grid):
     gate_dict = grid.gate_dict
@@ -73,6 +73,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
         if connections_made ==  most_connections and cost < lowest_cost:
             lowest_cost = cost
             best_solution = solved
+        
  
     if best_solution == None:
         print("No solution found")

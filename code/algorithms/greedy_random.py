@@ -14,7 +14,7 @@ def move(start, destination, used_lines, grid):
     if list_compare(start, destination):
         return(np.array((0,0,0)))
 
-    directions = random.sample(range(3), 3)
+    directions = np.random.choice(range(3),3,replace=False, p=[50/101,50/101,1/101])
     for direction in directions:
         adjustment = np.array((0,0,0))
         if start[direction] > destination[direction]:
