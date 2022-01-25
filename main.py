@@ -9,6 +9,7 @@ from code.algorithms import greedy_random
 from code.algorithms import second_algorithm
 from typing import Callable
 import datetime
+import time
 
 RUNS = 10000
 
@@ -40,7 +41,6 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     output and visualisation are optional and have default file names "test/chip_a_netlist_b_datetime.csv"
     and "test/chip_a_netlist_b_datetime.png" respectively
     """
-    
     if output == None:
         output = f"test/{chip}_{netlist}_{datetime.datetime.now()}.csv"
     if visualisation == None:
@@ -59,6 +59,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
 
     algo_dict = {"baseline": baseline.solve, "greedy_random": greedy_random.solve, "second": second_algorithm.solve}
     algorithm = algo_dict[algorithm]
+    t0 = time.time()
     for runs in range(RUNS):
         print(runs)
         solved = algorithm(netlist_to_solve, grid)
@@ -79,6 +80,9 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
 
     connections_made = evaluate(best_solution, grid)
     print(f"Reached {connections_made} connections")
+    t1 = time.time()
+    print("tijd =")
+    print(t1-t0)
 
     circuit = Circuit(best_solution)
     headers = ["net", "wires"]
