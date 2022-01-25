@@ -10,7 +10,7 @@ from code.algorithms import second_algorithm
 from typing import Callable
 import datetime
 
-TRIES = 5000
+RUNS = 10000
 
 def evaluate(connection_path_dict, grid):
     gate_dict = grid.gate_dict
@@ -59,17 +59,19 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
 
     algo_dict = {"baseline": baseline.solve, "greedy_random": greedy_random.solve, "second": second_algorithm.solve}
     algorithm = algo_dict[algorithm]
-    for tries in range(TRIES):
-        print(tries)
+    for runs in range(RUNS):
+        print(runs)
         solved = algorithm(netlist_to_solve, grid)
 
         connections_made = evaluate(solved, grid)
-        if connections_made >= most_connections:
+        if connections_made > most_connections:
             most_connections = connections_made
             cost = Circuit(solved).cost()
-            if cost < lowest_cost:
-                lowest_cost = cost
-                best_solution = solved
+            lowest_cost = cost
+            best_solution = solved
+        if connections_made ==  most_connections and cost < lowest_cost:
+            lowest_cost = cost
+            best_solution = solved
  
     if best_solution == None:
         print("No solution found")
