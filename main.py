@@ -7,11 +7,13 @@ from code.classes.grid import Grid
 from code.algorithms import baseline
 from code.algorithms import greedy_random
 from code.algorithms import second_algorithm
+from code.algorithms import test_algorithm
 from typing import Callable
 import datetime
 import time
 
-RUNS = 10000
+
+RUNS = 1
 
 def evaluate(connection_path_dict, grid):
     gate_dict = grid.gate_dict
@@ -58,7 +60,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     most_connections = 0
     best_solution = None
 
-    algo_dict = {"baseline": baseline.solve, "greedy_random": greedy_random.solve, "second": second_algorithm.solve}
+    algo_dict = {"baseline": baseline.solve, "greedy_random": greedy_random.solve, "second": second_algorithm.solve, "test": test_algorithm.solve}
     algorithm = algo_dict[algorithm]
     t0 = time.time()
     for runs in range(RUNS):
