@@ -37,22 +37,24 @@ def move(start, destination, grid):
 
     return np.array((0,0,0))
 
-def find_line_segment(lines):
+def find_line_segments(lines):
     # store every line segment as list of tuples
     line_segments = []
+
     for line in lines:
         line = list(line)
         points = [line[0], line[1]]
+        
         while True:
             for other_line in lines:
                 other_line = list(other_line)
                 if other_line[0] in points:
                     points.append(other_line[1])
-                    list_remove(lines, other_line)
+                    lines.remove(set(other_line))
                     continue
                 elif other_line[1] in points:
                     points.append(other_line[0])
-                    list_remove(lines, other_line)
+                    lines.remove(set(other_line))
                     continue
             break
         line_segments.append(points)
@@ -62,12 +64,11 @@ def find_line_segment(lines):
 
 
 def hill_climber(connection_path_dict, overlapping_lines):
-    # print(overlapping_lines)
+
     for connection in overlapping_lines:
         overlap = overlapping_lines[connection]
-
         old_path = connection_path_dict[connection]
-        print(find_line_segment(overlapping_lines[connection]))
+        print(find_line_segments(overlap))
     
     return connection_path_dict
     
