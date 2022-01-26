@@ -1,10 +1,7 @@
-"""
-Third algorithm generates a non valid solution with a connections but with overlap. Then by hill climbing generates a valid low-cost solution.
-"""
-from .helpers import (np, list_compare, random, is_almost_valid, list_remove)
+# genereer oplossing die alle connecties realiseert, maar wel overlap heeft
+from .helpers import (np, list_compare, random, is_valid)
 
-
-def move(start, destination, grid):
+def move(start, destination, used_lines, grid):
     
     all_gates = set(grid.gate_dict.values())
     forbidden_gates = set(all_gates) - {destination}
@@ -20,11 +17,13 @@ def move(start, destination, grid):
         adjustment = np.array((0,0,0))
         if start[direction] > destination[direction]:
             adjustment[direction] -= 1
-            if is_almost_valid(start, adjustment, forbidden_gates, grid):
+            line = {tuple(start), tuple(start + adjustment)}
+            if is_valid(start, adjustment, used_lines, forbidden_gates, grid):
                 return adjustment
         elif start[direction] < destination[direction]:
             adjustment[direction] += 1
-            if is_almost_valid(start, adjustment,forbidden_gates, grid):
+            line = {tuple(start), tuple(start + adjustment)}
+            if is_valid(start, adjustment, used_lines, forbidden_gates, grid):
                 return adjustment
 
     # if we can't move more towards our destination, force to go other valid direction
@@ -32,46 +31,11 @@ def move(start, destination, grid):
     for direction in directions:
         adjustment = np.array((0,0,0))
         adjustment[direction] = 1
-        if is_almost_valid(start, adjustment, forbidden_gates, grid):
+        line = {tuple(start), tuple(start + adjustment)}
+        if is_valid(start, adjustment, used_lines, forbidden_gates, grid):
             return adjustment
 
     return np.array((0,0,0))
-
-def find_line_segment(lines):
-    # store every line segment as list of tuples
-    line_segments = []
-    for line in lines:
-        line = list(line)
-        points = [line[0], line[1]]
-        while True:
-            for other_line in lines:
-                other_line = list(other_line)
-                if other_line[0] in points:
-                    points.append(other_line[1])
-                    list_remove(lines, other_line)
-                    continue
-                elif other_line[1] in points:
-                    points.append(other_line[0])
-                    list_remove(lines, other_line)
-                    continue
-            break
-        line_segments.append(points)
-
-    return line_segments
-
-
-
-def hill_climber(connection_path_dict, overlapping_lines):
-    # print(overlapping_lines)
-    for connection in overlapping_lines:
-        overlap = overlapping_lines[connection]
-
-        old_path = connection_path_dict[connection]
-        print(find_line_segment(overlapping_lines[connection]))
-    
-    return connection_path_dict
-    
-
 
 def solve(netlist, grid):
     """
@@ -81,7 +45,6 @@ def solve(netlist, grid):
     gates = grid.gate_dict
     connection_path_dict = {}
     used_lines = []
-    overlapping_lines = {}
 
     for connection in netlist:
 
@@ -98,7 +61,7 @@ def solve(netlist, grid):
         path = [coords_gate_a]
 
         while True:
-            adjustment = move(step, coords_gate_b, grid)
+            adjustment = move(step, coords_gate_b, used_lines, grid)
 
             comparison = adjustment == np.array((0,0,0))
             if comparison.all() == True:
@@ -106,13 +69,12 @@ def solve(netlist, grid):
 
             next_step = tuple(step + adjustment)
             line = {tuple(step), next_step}
-            if line in used_lines:
-                overlapping_lines.setdefault(connection, []).append(line)
             used_lines.append(line)
-    
             path.append(next_step)
             step = next_step
         
         connection_path_dict[connection] = path
 
-    return hill_climber(connection_path_dict, overlapping_lines)
+    return connection_path_dict
+
+# vind de plekken van overlap en fix deze

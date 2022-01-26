@@ -38,6 +38,14 @@ def list_in(list, list_of_lists):
             return True
     return False
 
+def list_remove(list, element):
+    counter = 0
+    for element2 in list:
+        if list_compare(element, element2):
+            return list[0:counter] + list[counter + 1:]
+        counter += 1
+    return list
+
 def is_valid(start, adjustment, used_lines, forbidden_gates, grid):
     line = {tuple(start), tuple(start + adjustment)}
     if not line in used_lines and not list_in(start + adjustment, forbidden_gates) and check_max_value(start + adjustment, grid):
