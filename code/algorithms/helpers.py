@@ -43,3 +43,8 @@ def is_valid(start, adjustment, used_lines, forbidden_gates, grid):
     if not line in used_lines and not list_in(start + adjustment, forbidden_gates) and check_max_value(start + adjustment, grid):
         return True
     return False
+
+def is_almost_valid(start, adjustment, forbidden_gates, grid):
+    if not list_in(start + adjustment, forbidden_gates) and check_max_value(start + adjustment, grid):
+        return True
+    return False

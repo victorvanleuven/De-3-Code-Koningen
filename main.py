@@ -4,10 +4,7 @@ import csv
 import code.visualisation.visualization as visualization
 from code.classes.netlist import Netlist
 from code.classes.grid import Grid
-from code.algorithms import baseline
-from code.algorithms import greedy_random
-from code.algorithms import second_algorithm
-from code.algorithms import test_algorithm
+from code.algorithms import baseline, greedy_random, second_algorithm, test_algorithm, third_algorithm
 from typing import Callable
 import datetime
 import time
@@ -60,7 +57,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     most_connections = 0
     best_solution = None
 
-    algo_dict = {"baseline": baseline.solve, "greedy_random": greedy_random.solve, "second": second_algorithm.solve, "test": test_algorithm.solve}
+    algo_dict = {"baseline": baseline.solve, "greedy_random": greedy_random.solve, "second": second_algorithm.solve, "test": test_algorithm.solve, "third": third_algorithm.solve}
     algorithm = algo_dict[algorithm]
     t0 = time.time()
     for runs in range(RUNS):
