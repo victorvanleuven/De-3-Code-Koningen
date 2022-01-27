@@ -22,20 +22,20 @@ class Test2_algorithm():
         pass
 
     def move(self, step, end, start):
-        directions = np.random.choice(range(3),3,replace=False, p=[50/101,50/101,1/101])
+
+
+        probabillities = [1, 1, 1, 1, 95, 1]
+
+        directions = [0, 1, 2]
         
         forbidden_gates = set(self.gates.values()) - set(end)
 
         for direction in directions:
             adjustment = np.array((0, 0, 0))
             if step[direction] < end[direction]:
-                adjustment[direction] += 1
-                if is_almost_valid(step, adjustment, forbidden_gates, self.grid):
-                    return adjustment
+                probabillities[] += 1000
             elif step[direction] > end[direction]:
-                adjustment[direction] -= 1
-                if is_almost_valid(step, adjustment, forbidden_gates, self.grid):
-                    return adjustment
+                return adjustment
 
         adjustments = []
         for direction in range(3):
