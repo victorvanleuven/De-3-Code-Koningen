@@ -62,6 +62,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     t0 = time.time()
     for runs in range(RUNS):
         print(runs)
+        # solved = Class(input).solved
         solved = algorithm(netlist_to_solve, grid)
 
         connections_made = evaluate(solved, grid)
