@@ -65,6 +65,9 @@ def find_line_segments(lines):
 
     return line_segments
 
+# def get_endpoints(a, b, line_segment):
+    # get points closest to a and b
+    # closest_to_a
 
 
 def hill_climber(connection_path_dict, overlapping_lines):
