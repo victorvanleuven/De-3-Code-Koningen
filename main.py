@@ -4,13 +4,13 @@ import csv
 import code.visualisation.visualization as visualization
 from code.classes.netlist import Netlist
 from code.classes.grid import Grid
-from code.algorithms import baseline, greedy_random, greedy_random_2_0, second_algorithm, third_algorithm, test2_algorithm
+from code.algorithms import baseline, greedy_random, greedy_random_2_0, third_algorithm, turd
 from typing import Callable
 import datetime
 import time
 
 
-RUNS = 10
+RUNS = 1
 
 def evaluate(connection_path_dict, grid):
     gate_dict = grid.gate_dict
@@ -58,7 +58,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     most_connections = 0
     best_solution = None
 
-    algo_dict = {"baseline": baseline.Baseline, "greedy_random": greedy_random.Greedy_Random, "greedy_random_2": greedy_random_2_0.Greedy_Random_2, "second": second_algorithm.solve, "third": third_algorithm.solve}
+    algo_dict = {"baseline": baseline.Baseline, "greedy_random": greedy_random.Greedy_Random, "greedy_random_2": greedy_random_2_0.Greedy_Random_2, "second": turd.Second, "third": third_algorithm.Third}
     algorithm = algo_dict[algorithm]
    
     t0 = time.time()
