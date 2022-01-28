@@ -118,15 +118,16 @@ class Greedy_Random_2():
                     # after 100 times trying the path reset every path and start again at the path that was stuck
                     if tries == 100:
                         tries = 0
-                        print(len(connection_path_dict))
+                        # print(len(connection_path_dict))
                         self.used_lines_dict = {}
+                        # print(self.used_lines_dict)
                         for connection in connection_path_dict.keys():
                             self.netlist.connections.append(connection)
 
                         # insert current connection to next spot in netlist to try again
                         self.netlist.connections.insert(iteration_count - 1, connection)
-
                         connection_path_dict.clear()
+
                         netlist_counter = 0
                         continue
                     tries += 1
@@ -146,4 +147,5 @@ class Greedy_Random_2():
 
             connection_path_dict[connection] = path
 
+        
         return connection_path_dict
