@@ -31,6 +31,18 @@ def check(connection_path_dict, grid):
             return False
     return True
 
+def count_overlap(connection_path_dict):
+    checked_lines = []
+    overlap = 0
+    used_lines = [item for sublist in connection_path_dict.values() for item in sublist]
+    for line in used_lines:
+        if line in checked_lines:
+            overlap += 1
+        else:
+            checked_lines.append(line)
+    return overlap
+
+
 
 def main(chip, netlist, algorithm: Callable, output, visualisation):
     """
@@ -66,8 +78,10 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     for run in range(RUNS):
         print("RUN!")
         print(run)
+
         # print(netlist_to_solve.connections)
         solved = algorithm(grid, Netlist(netlist_file)).solve()
+        print(count_overlap(solved))
 
         cost = Circuit(solved).cost()
 

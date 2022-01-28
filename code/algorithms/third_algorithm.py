@@ -81,10 +81,8 @@ class Third(Greedy_Random_2):
 
 
     def hill_climber(self, connection_path_dict):
-        print(self.overlapping_lines)
 
         for connection in self.overlapping_lines:
-            print(connection)
             overlap_amount = len(self.overlapping_lines[connection])
             
             # clear current path
@@ -92,15 +90,21 @@ class Third(Greedy_Random_2):
             self.used_lines[connection] = []
 
             # greedy_2
-            start = self.gates[connection][0]
-            destination = self.gates[connection][1]
+            start = self.gates[connection[0]]
+            destination = self.gates[connection[1]]
             layer_to_use = np.random.choice(range(1,8))
 
             step = start
             path = [start]
             while True:
-                adjustment = Greedy_Random_2.move(step, destination, layer_to_use, self.used_lines)
-                line = {step, step + adjustment}
+                
+                used_lines_list = [item for sublist in self.used_lines.values() for item in sublist]
+                adjustment = Greedy_Random_2.move(self, step, destination, layer_to_use, used_lines_list)
+
+                if np.array_equal(adjustment, np.array((0,0,0))):
+                    # OUD PAD TERUGPLAATSEN ALS WE VASTLOPEN
+                    break
+                line = {tuple(step), tuple(step + adjustment)}
                 self.used_lines[connection].append(line)
                 step = step + adjustment
                 path.append(tuple(step))
@@ -143,16 +147,15 @@ class Third(Greedy_Random_2):
             while True:
                 adjustment = self.move(step, coords_gate_b, local_used_lines)
 
-                comparison = adjustment == np.array((0,0,0))
-                if comparison.all() == True:
+                used_lines_list = [item for sublist in self.used_lines.values() for item in sublist]
+
+                if np.array_equal(adjustment, np.array((0,0,0))):
                     break
 
                 next_step = tuple(step + adjustment)
                 line = {tuple(step), next_step}
-                used_lines_list = [item for sublist in self.used_lines.values() for item in sublist]
-                print(used_lines_list)
 
-                if line in self.used_lines.values():
+                if line in used_lines_list:
                     self.overlapping_lines.setdefault(connection, []).append(line)
                 self.used_lines.setdefault(connection,[]).append(line)
                 local_used_lines.append(line)

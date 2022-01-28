@@ -63,6 +63,7 @@ class Greedy_Random_2():
                 if is_valid(start, adjustment, used_lines, forbidden_gates, self.grid):
                     return adjustment
 
+        print("stuck")
         return np.array((0, 0, 0))
 
     def solve(self):
