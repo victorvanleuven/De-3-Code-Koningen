@@ -10,14 +10,8 @@ def visualize_grid(filename_visualization, filename_grid, filename_solution):
     for key in gates.keys():
         x = gates[key][0]
         y = gates[key][1]
-    #     plt.plot(x, y, 0,".")
-    #     plt.annotate(key, (x,y))
-
-    # plt.grid(visible=True, which='major', axis="both")
-    # plt.savefig(filename_visualization)
 
     paths = load_output(filename_solution)
-    # print(paths)
     
     ax = plt.figure().add_subplot(projection='3d')
     for path in paths:
@@ -38,9 +32,6 @@ def visualize_grid(filename_visualization, filename_grid, filename_solution):
                 ax.plot(x,y,0,".")
                 ax.text(x,y,0, key)
         ax.plot(x_list, y_list, z_list)
-
-        # # 2d plot als er niet meerdere lagen zijn
-        # plt.plot(x_list, y_list)
 
     ax.set_zticks(range(8))
     plt.savefig(filename_visualization)       

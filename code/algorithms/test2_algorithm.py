@@ -33,7 +33,7 @@ class Test2_algorithm():
         for direction in directions:
             adjustment = np.array((0, 0, 0))
             if step[direction] < end[direction]:
-                probabillities[] += 1000
+                probabillities[0] += 1000
             elif step[direction] > end[direction]:
                 return adjustment
 

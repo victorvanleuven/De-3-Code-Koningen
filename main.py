@@ -49,6 +49,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
 
     grid_file = f"data/{chip}/print_{chip[-1]}.csv"
     netlist_file = f"data/{chip}/{netlist}.csv"
+    
     grid = Grid(grid_file)
     netlist_to_solve = Netlist(netlist_file)
 
@@ -57,18 +58,23 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     most_connections = 0
     best_solution = None
 
-    algo_dict = {"baseline": baseline.solve, "greedy_random": greedy_random.solve, "second": second_algorithm.solve, "test": test_algorithm.solve, "third": third_algorithm.solve, "test2": test2_algorithm.solve}
+    algo_dict = {"baseline": baseline.Baseline, "greedy_random": greedy_random.solve, "second": second_algorithm.solve, "test": test_algorithm.solve, "third": third_algorithm.solve}
     algorithm = algo_dict[algorithm]
+   
     t0 = time.time()
+    
     for runs in range(RUNS):
-        print(runs)
+        # print(runs)
         # solved = Class(input).solved
-        solved = algorithm(netlist_to_solve, grid)
+        solved = algorithm(grid, netlist_to_solve).solve()
+
+        cost = Circuit(solved).cost()
+        print(cost)
 
         connections_made = evaluate(solved, grid)
+        # print(connections_made)
         if connections_made > most_connections:
             most_connections = connections_made
-            cost = Circuit(solved).cost()
             lowest_cost = cost
             best_solution = solved
         if connections_made ==  most_connections and cost < lowest_cost:
