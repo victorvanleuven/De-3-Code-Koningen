@@ -10,7 +10,7 @@ import datetime
 import time
 
 
-RUNS = 1
+RUNS = 10
 
 def evaluate(connection_path_dict, grid):
     gate_dict = grid.gate_dict
@@ -81,6 +81,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
 
         # print(netlist_to_solve.connections)
         solved = algorithm(grid, Netlist(netlist_file)).solve()
+        print("solution")
         print(count_overlap(solved))
 
         cost = Circuit(solved).cost()

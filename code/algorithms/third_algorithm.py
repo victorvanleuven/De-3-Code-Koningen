@@ -4,7 +4,6 @@ Third algorithm generates a non valid solution with a connections but with overl
 from code.algorithms.greedy_random_2_0 import Greedy_Random_2
 from .helpers import (np, list_compare, random, is_valid, list_remove)
 
-
 class Third(Greedy_Random_2):
     def __init__(self, grid, netlist):
         
@@ -12,6 +11,8 @@ class Third(Greedy_Random_2):
         self.gates = grid.gate_dict
         self.grid = grid
         self.max_values = grid.get_maxmin_xy()
+        self.arrived = False
+        self.tries = 0
 
 
         self.used_lines = {}
@@ -82,39 +83,69 @@ class Third(Greedy_Random_2):
 
     def hill_climber(self, connection_path_dict):
 
-        for connection in self.overlapping_lines:
-            overlap_amount = len(self.overlapping_lines[connection])
-            
-            # clear current path
-            self.overlapping_lines[connection] = []
-            self.used_lines[connection] = []
+        invalid_solution = True
 
-            # greedy_2
-            start = self.gates[connection[0]]
-            destination = self.gates[connection[1]]
-            layer_to_use = np.random.choice(range(1,8))
+        while invalid_solution and self.tries < 500:
+            print(f"Tries: {self.tries}")
 
-            step = start
-            path = [start]
-            while True:
+            overlapping_lines_list = [item for sublist in self.overlapping_lines.values() for item in sublist]
+
+            print(len(overlapping_lines_list))
+
+            # previous_overlapping_lines = len(overlapping_lines_list)
+
+            if len(overlapping_lines_list) == 0:
+                invalid_solution = False
+
+            for connection in self.overlapping_lines:
+                self.arrived = False
+                overlap_amount = len(self.overlapping_lines[connection])
                 
-                used_lines_list = [item for sublist in self.used_lines.values() for item in sublist]
-                adjustment = Greedy_Random_2.move(self, step, destination, layer_to_use, used_lines_list)
-
-                if np.array_equal(adjustment, np.array((0,0,0))):
-                    # OUD PAD TERUGPLAATSEN ALS WE VASTLOPEN
-                    break
-                line = {tuple(step), tuple(step + adjustment)}
-                self.used_lines[connection].append(line)
-                step = step + adjustment
-                path.append(tuple(step))
+                # save old path
+                old_overlap = self.overlapping_lines[connection]
+                old_used_lines = self.used_lines[connection]
                 
-                if np.array_equal(step, destination):
-                    break
+                # clear current path
+                self.overlapping_lines[connection] = []
+                self.used_lines[connection] = []
+
+                # greedy_2
+                start = self.gates[connection[0]]
+                destination = self.gates[connection[1]]
+                layer_to_use = np.random.choice(range(1,8))
+
+                step = start
+                path = [start]
+                while True:
+                    
+                    used_lines_list = [item for sublist in self.used_lines.values() for item in sublist]
+                    adjustment = Greedy_Random_2.move(self, step, destination, layer_to_use, used_lines_list)
+
+                    if np.array_equal(adjustment, np.array((0,0,0))):
+                        # set to old path when stuck
+                        self.arrived = False
+                        self.overlapping_lines[connection] = old_overlap
+                        self.used_lines[connection] = old_used_lines
+                        self.tries += 1
+                        break
+
+                    line = {tuple(step), tuple(step + adjustment)}
+                    self.used_lines[connection].append(line)
+                    step = step + adjustment
+                    path.append(tuple(step))
+                    
+                    if np.array_equal(step, destination):
+                        print("reset")
+                        self.tries = 0
+                        break    
+
+                if self.arrived == True:
+                    connection_path_dict[connection] = path
+                
+                # if previous_overlapping_lines > len(overlapping_lines_list):
+                #     tries = 0
+                #     previous_overlapping_lines = 
             
-            connection_path_dict[connection] = path
-            
-        
         return connection_path_dict
         
 
@@ -166,6 +197,5 @@ class Third(Greedy_Random_2):
             connection_path_dict[connection] = path
 
         solution = self.hill_climber(connection_path_dict)
-        print("hoih")
 
         return solution
