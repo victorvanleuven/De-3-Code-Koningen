@@ -6,7 +6,7 @@ from code.algorithms.baseline import Baseline
 from .helpers import (np, list_compare, random, is_valid)
 from main import count_overlap
 
-class Third(Baseline):
+class Third():
     def __init__(self, grid, netlist):
         
         self.netlist = netlist
@@ -142,9 +142,9 @@ class Third(Baseline):
                     
                     used_lines_list = [item for sublist in self.used_lines.values() for item in sublist]
 
-                    # adjustment = Greedy_Random_2.move(self, step, destination, layer_to_use, used_lines_list)
+                    adjustment = Greedy_Random_2.move(self, step, destination, layer_to_use, used_lines_list)
                 
-                    adjustment = Baseline.move(self, tuple(step), tuple(destination))
+                    # adjustment = Baseline.move(self, tuple(step), tuple(destination))
 
                     if np.array_equal(adjustment, np.array((0,0,0))):
                         # set to old path when stuck
@@ -165,7 +165,8 @@ class Third(Baseline):
                         connection_path_dict[connection] = path
                         overlapping_lines_dict = self.find_overlap(connection_path_dict)
                         break    
-
+                        
+        print(count_overlap(connection_path_dict))
         return connection_path_dict
         
 

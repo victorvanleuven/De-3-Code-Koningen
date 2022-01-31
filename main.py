@@ -10,7 +10,7 @@ import datetime
 import time
 
 
-RUNS = 10
+RUNS = 100
 
 def evaluate(connection_path_dict, grid):
     gate_dict = grid.gate_dict
@@ -64,9 +64,9 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     """
     timestamp = str(datetime.datetime.now())[5:16]
     if output == None:
-        output = f"test/{algorithm}_{chip}_{netlist}[{timestamp}].csv"
+        output = f"test/{netlist}/{algorithm}_[{timestamp}].csv"
     if visualisation == None:
-        visualisation = f"test/{algorithm}_{chip}_{netlist}[{timestamp}].png"
+        visualisation = f"test/{netlist}/{algorithm}_[{timestamp}].png"
 
 
     grid_file = f"data/{chip}/print_{chip[-1]}.csv"
@@ -84,6 +84,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     algorithm = algo_dict[algorithm]
    
     t0 = time.time()
+    least_overlap = 1000000
     
     for run in range(RUNS):
         print("RUN!")
@@ -93,17 +94,26 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
         solved = algorithm(grid, Netlist(netlist_file)).solve()
 
         cost = Circuit(solved).cost()
-        least_overlap = 100
 
         connections_made = evaluate(solved, grid)
 
-        if connections_made > most_connections:
+        overlap = count_overlap(solved)
+
+        # algorithms either make all connections with overlap or avoid overlap but fail to make connections
+        # which is why only one of the two conditions has to be checked
+        if connections_made > most_connections or overlap < least_overlap:
+            print("test1")
             most_connections = connections_made
             lowest_cost = cost
+            least_overlap = overlap
             best_solution = solved
-        if connections_made == most_connections and count_overlap(solved) < least_overlap:          # cost < lowest_cost:
-            least_overlap = count_overlap(solved)
-            best_solution = solved
+        elif connections_made == most_connections and overlap == least_overlap:
+            print("test2") 
+            if cost < lowest_cost:
+                print("test3")
+                least_overlap = overlap
+                best_solution = solved
+
     
     print(f"overlappie: {count_overlap(best_solution)}")
     if best_solution == None:
