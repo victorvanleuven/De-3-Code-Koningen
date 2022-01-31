@@ -4,13 +4,19 @@ import csv
 import code.visualisation.visualization as visualization
 from code.classes.netlist import Netlist
 from code.classes.grid import Grid
-from code.algorithms import baseline, greedy_random, greedy_random_2_0, third_algorithm, turd
+from code.algorithms import (
+    baseline,
+    greedy_random,
+    greedy_random_2_0,
+    greedy_random_hillclimber as gr_h,
+)
 from typing import Callable
 import datetime
 import time
 
 
 RUNS = 100
+
 
 def evaluate(connection_path_dict, grid):
     gate_dict = grid.gate_dict
@@ -22,6 +28,7 @@ def evaluate(connection_path_dict, grid):
             counter += 1
     return counter
 
+
 def check(connection_path_dict, grid):
     gate_dict = grid.gate_dict
     for connection in connection_path_dict.keys():
@@ -31,12 +38,13 @@ def check(connection_path_dict, grid):
             return False
     return True
 
+
 def count_overlap(connection_path_dict):
     checked_lines = []
     lines = []
     overlap = 0
     used_points = connection_path_dict.values()
-    
+
     for list in used_points:
         for index in range(len(list) - 1):
             a = list[index]
@@ -49,29 +57,27 @@ def count_overlap(connection_path_dict):
             overlap += 1
         else:
             checked_lines.append(line)
-    
-    return overlap
 
+    return overlap
 
 
 def main(chip, netlist, algorithm: Callable, output, visualisation):
     """
     usage: python3 main.py chip_a netlist_b algorithm [output] [visualisation]
-    
+
     choose one of the following algorithms: baseline, greedy_random
     output and visualisation are optional and have default file names "test/chip_a_netlist_b_datetime.csv"
     and "test/chip_a_netlist_b_datetime.png" respectively
     """
     timestamp = str(datetime.datetime.now())[5:16]
     if output == None:
-        output = f"test/{netlist}/{algorithm}_[{timestamp}].csv"
+        output = f"test/{netlist}/{algorithm}_{RUNS}_[{timestamp}].csv"
     if visualisation == None:
-        visualisation = f"test/{netlist}/{algorithm}_[{timestamp}].png"
-
+        visualisation = f"test/{netlist}/{algorithm}_{RUNS}_[{timestamp}].png"
 
     grid_file = f"data/{chip}/print_{chip[-1]}.csv"
     netlist_file = f"data/{chip}/{netlist}.csv"
-    
+
     grid = Grid(grid_file)
     netlist_to_solve = Netlist(netlist_file)
 
@@ -80,12 +86,17 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     most_connections = 0
     best_solution = None
 
-    algo_dict = {"baseline": baseline.Baseline, "greedy_random": greedy_random.Greedy_Random, "greedy_random_2": greedy_random_2_0.Greedy_Random_2, "second": turd.Second, "third": third_algorithm.Third}
+    algo_dict = {
+        "baseline": baseline.Baseline,
+        "gr": greedy_random.Greedy_Random,
+        "gr_2": greedy_random_2_0.Greedy_Random_2,
+        "gr_hill": gr_h.Greedy_Random_Hillclimber,
+    }
     algorithm = algo_dict[algorithm]
-   
+
     t0 = time.time()
     least_overlap = 1000000
-    
+
     for run in range(RUNS):
         print("RUN!")
         print(run)
@@ -102,20 +113,15 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
         # algorithms either make all connections with overlap or avoid overlap but fail to make connections
         # which is why only one of the two conditions has to be checked
         if connections_made > most_connections or overlap < least_overlap:
-            print("test1")
             most_connections = connections_made
             lowest_cost = cost
             least_overlap = overlap
             best_solution = solved
         elif connections_made == most_connections and overlap == least_overlap:
-            print("test2") 
             if cost < lowest_cost:
-                print("test3")
                 least_overlap = overlap
                 best_solution = solved
 
-    
-    print(f"overlappie: {count_overlap(best_solution)}")
     if best_solution == None:
         print("No solution found")
         return 0
@@ -124,7 +130,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     print(f"Reached {connections_made} connections")
     t1 = time.time()
     print("tijd =")
-    print(t1-t0)
+    print(t1 - t0)
 
     circuit = Circuit(best_solution)
     headers = ["net", "wires"]
@@ -134,28 +140,42 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
         new_row = {"net": connection, "wires": best_solution[connection]}
         new_dict.append(new_row)
 
-    new_dict.append({"net": f"{chip}_{netlist[0:3]+netlist[-2:]}", "wires": circuit.cost()})
+    new_dict.append(
+        {"net": f"{chip}_{netlist[0:3]+netlist[-2:]}", "wires": circuit.cost()}
+    )
 
-    with open(output, 'w') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames = headers)
+    with open(output, "w") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=headers)
         writer.writeheader()
         writer.writerows(new_dict)
 
     visualization.visualize_grid(visualisation, grid_file, output)
-      
+
+
 if __name__ == "__main__":
     # Set-up parsing command line arguments
-    parser = argparse.ArgumentParser(description = "Generates connections between gates in a chip with the lowest cost possible.")
+    parser = argparse.ArgumentParser(
+        description="Generates connections between gates in a chip with the lowest cost possible."
+    )
 
     # Adding arguments
-    parser.add_argument("chip_file", help = "chip file (csv)")
-    parser.add_argument("netlist_file", help = "netlist file (csv)")
-    parser.add_argument("algorithm", help = "algorithm to be used: [random_algo, greedy_distance, greedy_cost]")
-    parser.add_argument("output_file", help = "output file (csv)", nargs="?")
-    parser.add_argument("visualisation_file", help = "visualization (png)", nargs="?")
+    parser.add_argument("chip_file", help="chip file (csv)")
+    parser.add_argument("netlist_file", help="netlist file (csv)")
+    parser.add_argument(
+        "algorithm",
+        help="algorithm to be used: [random_algo, greedy_distance, greedy_cost]",
+    )
+    parser.add_argument("output_file", help="output file (csv)", nargs="?")
+    parser.add_argument("visualisation_file", help="visualization (png)", nargs="?")
 
     # Read arguments from command line
     args = parser.parse_args()
 
     # Run main with provided arguments
-    main(args.chip_file, args.netlist_file, args.algorithm, args.output_file, args.visualisation_file)
+    main(
+        args.chip_file,
+        args.netlist_file,
+        args.algorithm,
+        args.output_file,
+        args.visualisation_file,
+    )

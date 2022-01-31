@@ -1,9 +1,10 @@
 """
 Forces to upper layers based on length netlist
 """
-from .helpers import (np, list_compare, random, is_valid)
+from .helpers import np, list_compare, random, is_valid
 
-class Greedy_Random_2():    
+
+class Greedy_Random_2:
     def __init__(self, grid, netlist):
         self.netlist = netlist
         self.gates = grid.gate_dict
@@ -12,35 +13,36 @@ class Greedy_Random_2():
         self.used_lines_dict = {}
 
     def move(self, start, destination, layer_to_use, used_lines):
-        
+
         forbidden_gates = set(self.gates.values()) - {destination}
 
         start = np.array(start)
         destination = np.array(destination)
         arrived = False
 
-
         if np.array_equal(start, destination):
             arrived = True
-            adjustment = np.array((0,0,0))
+            adjustment = np.array((0, 0, 0))
             return adjustment
 
         if start[0] == destination[0] and start[1] == destination[1]:
-            adjustment = np.array((0,0,0))
+            adjustment = np.array((0, 0, 0))
             adjustment[2] -= 1
             arrived = True
             if is_valid(start, adjustment, used_lines, forbidden_gates, self.grid):
                 return adjustment
 
         if start[2] < layer_to_use and not arrived:
-            adjustment = np.array((0,0,0))
+            adjustment = np.array((0, 0, 0))
             adjustment[2] += 1
             if is_valid(start, adjustment, used_lines, forbidden_gates, self.grid):
                 return adjustment
 
-        directions = np.random.choice(range(3),3,replace=False, p=[50/101,50/101,1/101])
+        directions = np.random.choice(
+            range(3), 3, replace=False, p=[50 / 101, 50 / 101, 1 / 101]
+        )
         for direction in directions:
-            adjustment = np.array((0,0,0))
+            adjustment = np.array((0, 0, 0))
             if start[direction] > destination[direction]:
                 adjustment[direction] -= 1
                 if is_valid(start, adjustment, used_lines, forbidden_gates, self.grid):
@@ -51,15 +53,21 @@ class Greedy_Random_2():
                     return adjustment
 
         # if we can't move more towards our destination, force to go other valid direction
-        directions = np.random.choice(range(3),3,replace=False, p=[5/11,5/11,1/11])
+        directions = np.random.choice(
+            range(3), 3, replace=False, p=[5 / 11, 5 / 11, 1 / 11]
+        )
         for direction in directions:
-            adjustment = np.array((0,0,0))
+            adjustment = np.array((0, 0, 0))
             adjustment[direction] = 1
             if is_valid(start, adjustment, used_lines, forbidden_gates, self.grid):
                 return adjustment
-            
+
             # when path is at destination but too high
-            if start[0] == destination[0] and start[1] == destination[1] and start[2] != destination[2]:
+            if (
+                start[0] == destination[0]
+                and start[1] == destination[1]
+                and start[2] != destination[2]
+            ):
                 wiggle_list = [-1, 1]
                 wiggle = random.choice(wiggle_list)
                 adjustment[direction] = wiggle
@@ -93,7 +101,7 @@ class Greedy_Random_2():
             # retrieve gate coordinates as tuples
             coords_gate_a = self.gates[gate_a]
             coords_gate_b = self.gates[gate_b]
-            
+
             # start at gate_a and build a path from gate_a to gate_b
             step = np.array(coords_gate_a)
             path = [coords_gate_a]
@@ -104,7 +112,11 @@ class Greedy_Random_2():
                     break
 
                 # create a list of all values in used lines
-                used_lines = [item for sublist in self.used_lines_dict.values() for item in sublist]
+                used_lines = [
+                    item
+                    for sublist in self.used_lines_dict.values()
+                    for item in sublist
+                ]
 
                 adjustment = self.move(step, coords_gate_b, layer_to_use, used_lines)
 
@@ -112,9 +124,9 @@ class Greedy_Random_2():
                 if np.array_equal(adjustment, np.array((0, 0, 0))) and tries < 25:
                     tries += 1
                     continue
-                
+
                 # try the whole path again after 24 times trying the same step
-                if np.array_equal(adjustment, np.array((0,0,0))):
+                if np.array_equal(adjustment, np.array((0, 0, 0))):
                     path = [coords_gate_a]
                     step = np.array(coords_gate_a)
                     self.used_lines_dict[connection] = []
@@ -140,7 +152,6 @@ class Greedy_Random_2():
                 # if comparison.all() == True:
                 #     break
 
-
                 next_step = tuple(step + adjustment)
                 line = {tuple(step), next_step}
 
@@ -150,5 +161,4 @@ class Greedy_Random_2():
 
             connection_path_dict[connection] = path
 
-        
         return connection_path_dict

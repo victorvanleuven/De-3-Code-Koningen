@@ -1,8 +1,9 @@
-from .helpers import (np, list_compare, random, is_valid)
+from .helpers import np, list_compare, random, is_valid
 
-class Baseline():    
+
+class Baseline:
     def __init__(self, grid, netlist):
-        
+
         self.netlist = netlist
         self.gates = grid.gate_dict
         self.grid = grid
@@ -22,21 +23,22 @@ class Baseline():
 
         # don't move if we are at our destination
         if np.array_equal(start, destination):
-            return(np.array((0,0,0)))
-        
+            return np.array((0, 0, 0))
+
         # go over moves in all directions in random order
         axes = random.sample(range(3), 3)
         for axis in axes:
             directions = random.sample([-1, 1], 2)
             for direction in directions:
-                adjustment = np.array((0,0,0))
+                adjustment = np.array((0, 0, 0))
                 adjustment[axis] = direction
 
-                if is_valid(start, adjustment, self.used_lines, forbidden_gates, self.grid):
-                    # print(is_valid(start, adjustment, self.used_lines, forbidden_gates, self.grid))
+                if is_valid(
+                    start, adjustment, self.used_lines, forbidden_gates, self.grid
+                ):
                     return adjustment
 
-        return np.array((0,0,0))
+        return np.array((0, 0, 0))
 
     def solve(self):
         netlist = self.netlist.connections
@@ -51,7 +53,7 @@ class Baseline():
             # retrieve gate coordinates as tuples
             coords_gate_a = self.gates[gate_a]
             coords_gate_b = self.gates[gate_b]
-            
+
             # start at gate_a and build a path from gate_a to gate_b
             step = np.array(coords_gate_a)
             path = [coords_gate_a]
@@ -61,7 +63,7 @@ class Baseline():
                 print(type(coords_gate_b))
                 adjustment = self.move(step, coords_gate_b)
 
-                comparison = adjustment == np.array((0,0,0))
+                comparison = adjustment == np.array((0, 0, 0))
                 if comparison.all() == True:
                     break
 
@@ -70,7 +72,7 @@ class Baseline():
                 self.used_lines.append(line)
                 path.append(next_step)
                 step = next_step
-            
+
             connection_path_dict[connection] = path
 
         return connection_path_dict

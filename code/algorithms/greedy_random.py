@@ -3,9 +3,10 @@ first algorithm based on the baseline, but avoiding overlap and even intersectio
 """
 from .helpers import np, is_valid
 
-class Greedy_Random():    
+
+class Greedy_Random:
     def __init__(self, grid, netlist):
-        
+
         self.netlist = netlist
         self.gates = grid.gate_dict
         self.grid = grid
@@ -13,36 +14,44 @@ class Greedy_Random():
         self.used_lines = []
 
     def move(self, start, destination):
-        
+
         forbidden_gates = set(self.gates.values()) - {destination}
 
         start = np.array(start)
         destination = np.array(destination)
 
         if np.array_equal(start, destination):
-            return(np.array((0,0,0)))
+            return np.array((0, 0, 0))
 
-        directions = np.random.choice(range(3),3,replace=False, p=[50/101,50/101,1/101])
+        directions = np.random.choice(
+            range(3), 3, replace=False, p=[50 / 101, 50 / 101, 1 / 101]
+        )
         for direction in directions:
-            adjustment = np.array((0,0,0))
+            adjustment = np.array((0, 0, 0))
             if start[direction] > destination[direction]:
                 adjustment[direction] -= 1
-                if is_valid(start, adjustment, self.used_lines, forbidden_gates, self.grid):
+                if is_valid(
+                    start, adjustment, self.used_lines, forbidden_gates, self.grid
+                ):
                     return adjustment
             elif start[direction] < destination[direction]:
                 adjustment[direction] += 1
-                if is_valid(start, adjustment, self.used_lines, forbidden_gates, self.grid):
+                if is_valid(
+                    start, adjustment, self.used_lines, forbidden_gates, self.grid
+                ):
                     return adjustment
 
         # if we can't move more towards our destination, force to go other valid direction
-        directions = np.random.choice(range(3),3,replace=False, p=[1/9,1/9,7/9])
+        directions = np.random.choice(
+            range(3), 3, replace=False, p=[1 / 9, 1 / 9, 7 / 9]
+        )
         for direction in directions:
-            adjustment = np.array((0,0,0))
+            adjustment = np.array((0, 0, 0))
             adjustment[direction] = 1
             if is_valid(start, adjustment, self.used_lines, forbidden_gates, self.grid):
                 return adjustment
 
-        return np.array((0,0,0))
+        return np.array((0, 0, 0))
 
     def solve(self):
         """
@@ -60,7 +69,7 @@ class Greedy_Random():
             # retrieve gate coordinates as tuples
             coords_gate_a = self.gates[gate_a]
             coords_gate_b = self.gates[gate_b]
-            
+
             # start at gate_a and build a path from gate_a to gate_b
             step = np.array(coords_gate_a)
             path = [coords_gate_a]
@@ -68,7 +77,7 @@ class Greedy_Random():
             while True:
                 adjustment = self.move(step, coords_gate_b)
 
-                comparison = adjustment == np.array((0,0,0))
+                comparison = adjustment == np.array((0, 0, 0))
                 if comparison.all() == True:
                     break
 
@@ -77,7 +86,7 @@ class Greedy_Random():
                 self.used_lines.append(line)
                 path.append(next_step)
                 step = next_step
-            
+
             connection_path_dict[connection] = path
 
         return connection_path_dict
