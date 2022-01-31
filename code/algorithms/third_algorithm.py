@@ -3,6 +3,7 @@ Third algorithm generates a non valid solution with a connections but with overl
 """
 from code.algorithms.greedy_random_2_0 import Greedy_Random_2
 from .helpers import (np, list_compare, random, is_valid)
+from main import count_overlap
 
 class Third(Greedy_Random_2):
     def __init__(self, grid, netlist):
@@ -16,7 +17,34 @@ class Third(Greedy_Random_2):
 
 
         self.used_lines = {}
-        self.overlapping_lines = {}
+        # self.overlapping_lines = {}
+
+    def find_overlap(self, connection_path_dict):
+        lines_dict = {}
+        checked_lines = []
+        overlapping_lines_dict = {}
+
+        for connection in connection_path_dict:
+            lines = []
+            points = connection_path_dict[connection]
+            for index in range(len(connection_path_dict[connection]) - 1):
+                a = points[index]
+                b = points[index + 1]
+                line = {a, b}
+                lines.append(line)
+            lines_dict[connection] = lines
+
+
+        for connection in lines_dict:
+            for line in lines_dict[connection]:
+                if line in checked_lines:
+                    overlapping_lines_dict.setdefault(connection, []).append(line)
+                else:
+                    checked_lines.append(line)
+
+        return overlapping_lines_dict
+
+
 
     def move(self, start, destination, used_lines):
     
@@ -75,37 +103,32 @@ class Third(Greedy_Random_2):
 
         return line_segments
 
-    # def get_endpoints(a, b, line_segment):
-        # get points closest to a and b
-        # closest_to_a
-
 
     def hill_climber(self, connection_path_dict):
 
         invalid_solution = True
+        overlapping_lines_dict = self.find_overlap(connection_path_dict)
+        
 
         while invalid_solution and self.tries < 500:
             print(f"Tries: {self.tries}")
 
-            overlapping_lines_list = [item for sublist in self.overlapping_lines.values() for item in sublist]
-
-            print(len(overlapping_lines_list))
-
-            # previous_overlapping_lines = len(overlapping_lines_list)
+            overlapping_lines_list = [item for sublist in overlapping_lines_dict.values() for item in sublist]
+            print(overlapping_lines_list)
 
             if len(overlapping_lines_list) == 0:
                 invalid_solution = False
 
-            for connection in self.overlapping_lines:
+            for connection in overlapping_lines_dict:
                 self.arrived = False
-                overlap_amount = len(self.overlapping_lines[connection])
+                print(f"overlapping dict: {overlapping_lines_dict}")
                 
                 # save old path
-                old_overlap = self.overlapping_lines[connection]
+                old_overlap = overlapping_lines_dict[connection]
                 old_used_lines = self.used_lines[connection]
                 
                 # clear current path
-                self.overlapping_lines[connection] = []
+                overlapping_lines_dict[connection] = []
                 self.used_lines[connection] = []
 
                 # greedy_2
@@ -123,7 +146,7 @@ class Third(Greedy_Random_2):
                     if np.array_equal(adjustment, np.array((0,0,0))):
                         # set to old path when stuck
                         self.arrived = False
-                        self.overlapping_lines[connection] = old_overlap
+                        overlapping_lines_dict[connection] = old_overlap
                         self.used_lines[connection] = old_used_lines
                         self.tries += 1
                         break
@@ -138,11 +161,11 @@ class Third(Greedy_Random_2):
 
                 if self.arrived == True:
                     connection_path_dict[connection] = path
+                    overlapping_lines_dict = self.find_overlap(connection_path_dict)
                 
-                # if previous_overlapping_lines > len(overlapping_lines_list):
-                #     tries = 0
-                #     previous_overlapping_lines = 
-            
+        overlap = count_overlap(connection_path_dict)
+        print(f"overlwappie: {overlap}")
+        # print(self.find_overlap(connection_path_dict))
         return connection_path_dict
         
 
@@ -183,8 +206,6 @@ class Third(Greedy_Random_2):
                 next_step = tuple(step + adjustment)
                 line = {tuple(step), next_step}
 
-                if line in used_lines_list:
-                    self.overlapping_lines.setdefault(connection, []).append(line)
                 self.used_lines.setdefault(connection,[]).append(line)
                 local_used_lines.append(line)
         
@@ -193,6 +214,11 @@ class Third(Greedy_Random_2):
             
             connection_path_dict[connection] = path
 
-        solution = self.hill_climber(connection_path_dict)
+        # overlap = count_overlap(connection_path_dict)
+        # print(f"overlappie: {overlap}")
 
+        solution = self.hill_climber(connection_path_dict)
+        
+        overlap = count_overlap(solution)
+        print(f"overlappie: {overlap}")
         return solution

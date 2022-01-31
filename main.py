@@ -10,7 +10,7 @@ import datetime
 import time
 
 
-RUNS = 10
+RUNS = 1
 
 def evaluate(connection_path_dict, grid):
     gate_dict = grid.gate_dict
@@ -33,13 +33,23 @@ def check(connection_path_dict, grid):
 
 def count_overlap(connection_path_dict):
     checked_lines = []
+    lines = []
     overlap = 0
-    used_lines = [item for sublist in connection_path_dict.values() for item in sublist]
-    for line in used_lines:
+    used_points = connection_path_dict.values()
+    
+    for list in used_points:
+        for index in range(len(list) - 1):
+            a = list[index]
+            b = list[index + 1]
+            line = {a, b}
+            lines.append(line)
+
+    for line in lines:
         if line in checked_lines:
             overlap += 1
         else:
             checked_lines.append(line)
+    
     return overlap
 
 
