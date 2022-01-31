@@ -81,10 +81,9 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
 
         # print(netlist_to_solve.connections)
         solved = algorithm(grid, Netlist(netlist_file)).solve()
-        print("solution")
-        print(count_overlap(solved))
 
         cost = Circuit(solved).cost()
+        least_overlap = 100
 
         connections_made = evaluate(solved, grid)
 
@@ -92,11 +91,11 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
             most_connections = connections_made
             lowest_cost = cost
             best_solution = solved
-        if connections_made ==  most_connections and cost < lowest_cost:
-            lowest_cost = cost
+        if connections_made == most_connections and count_overlap(solved) < least_overlap:          # cost < lowest_cost:
+            least_overlap = count_overlap(solved)
             best_solution = solved
-        
- 
+    
+    print(count_overlap(best_solution))
     if best_solution == None:
         print("No solution found")
         return 0

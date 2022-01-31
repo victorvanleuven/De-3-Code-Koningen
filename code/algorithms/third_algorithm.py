@@ -2,7 +2,7 @@
 Third algorithm generates a non valid solution with a connections but with overlap. Then by hill climbing generates a valid low-cost solution.
 """
 from code.algorithms.greedy_random_2_0 import Greedy_Random_2
-from .helpers import (np, list_compare, random, is_valid, list_remove)
+from .helpers import (np, list_compare, random, is_valid)
 
 class Third(Greedy_Random_2):
     def __init__(self, grid, netlist):
@@ -17,7 +17,6 @@ class Third(Greedy_Random_2):
 
         self.used_lines = {}
         self.overlapping_lines = {}
-        self.solved = self.solve()
 
     def move(self, start, destination, used_lines):
     
@@ -135,8 +134,6 @@ class Third(Greedy_Random_2):
                     path.append(tuple(step))
                     
                     if np.array_equal(step, destination):
-                        print("reset")
-                        self.tries = 0
                         break    
 
                 if self.arrived == True:
