@@ -48,6 +48,8 @@ def list_remove(list, element):
 
 def is_valid(start, adjustment, used_lines, forbidden_gates, grid):
     line = {tuple(start), tuple(start + adjustment)}
+    if type(used_lines) != list:
+        used_lines= [item for sublist in used_lines.values() for item in sublist]
     if not line in used_lines and not list_in(start + adjustment, forbidden_gates) and check_max_value(start + adjustment, grid):
         return True
     return False

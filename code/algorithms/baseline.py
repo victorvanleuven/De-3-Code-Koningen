@@ -57,6 +57,8 @@ class Baseline():
             path = [coords_gate_a]
 
             while True:
+                print(type(step))
+                print(type(coords_gate_b))
                 adjustment = self.move(step, coords_gate_b)
 
                 comparison = adjustment == np.array((0,0,0))

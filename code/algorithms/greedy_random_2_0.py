@@ -17,19 +17,22 @@ class Greedy_Random_2():
 
         start = np.array(start)
         destination = np.array(destination)
-        self.arrived = False
+        arrived = False
+
 
         if np.array_equal(start, destination):
-            self.arrived = True
+            arrived = True
+            adjustment = np.array((0,0,0))
+            return adjustment
 
         if start[0] == destination[0] and start[1] == destination[1]:
             adjustment = np.array((0,0,0))
             adjustment[2] -= 1
-            self.arrived = True
+            arrived = True
             if is_valid(start, adjustment, used_lines, forbidden_gates, self.grid):
                 return adjustment
 
-        if start[2] < layer_to_use and not self.arrived:
+        if start[2] < layer_to_use and not arrived:
             adjustment = np.array((0,0,0))
             adjustment[2] += 1
             if is_valid(start, adjustment, used_lines, forbidden_gates, self.grid):

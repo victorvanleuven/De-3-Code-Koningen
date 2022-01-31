@@ -10,7 +10,7 @@ import datetime
 import time
 
 
-RUNS = 1
+RUNS = 10
 
 def evaluate(connection_path_dict, grid):
     gate_dict = grid.gate_dict
@@ -105,7 +105,7 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
             least_overlap = count_overlap(solved)
             best_solution = solved
     
-    print(count_overlap(best_solution))
+    print(f"overlappie: {count_overlap(best_solution)}")
     if best_solution == None:
         print("No solution found")
         return 0
