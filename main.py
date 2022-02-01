@@ -15,7 +15,7 @@ import datetime
 import time
 
 
-RUNS = 100
+# RUNS = 100
 
 
 def evaluate(connection_path_dict, grid):
@@ -61,7 +61,7 @@ def count_overlap(connection_path_dict):
     return overlap
 
 
-def main(chip, netlist, algorithm: Callable, output, visualisation):
+def main(chip, netlist, algorithm: Callable, runtime, output, visualisation):
     """
     usage: python3 main.py chip_a netlist_b algorithm [output] [visualisation]
 
@@ -71,15 +71,14 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     """
     timestamp = str(datetime.datetime.now())[5:16]
     if output == None:
-        output = f"test/{netlist}/{algorithm}_{RUNS}_[{timestamp}].csv"
+        output = f"test/{netlist}/{algorithm}_{runtime}_[{timestamp}].csv"
     if visualisation == None:
-        visualisation = f"test/{netlist}/{algorithm}_{RUNS}_[{timestamp}].png"
+        visualisation = f"test/{netlist}/{algorithm}_{runtime}_[{timestamp}].png"
 
     grid_file = f"data/{chip}/print_{chip[-1]}.csv"
     netlist_file = f"data/{chip}/{netlist}.csv"
 
     grid = Grid(grid_file)
-    netlist_to_solve = Netlist(netlist_file)
 
     # try a 1000 times, pick correct solution with lowest cost
     lowest_cost = 10000000000000
@@ -94,12 +93,12 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
     }
     algorithm = algo_dict[algorithm]
 
-    t0 = time.time()
+    start = time.time()
+    n_runs = 0
     least_overlap = 1000000
 
-    for run in range(RUNS):
-        print("RUN!")
-        print(run)
+    while time.time() - start < runtime:
+        print(n_runs)
 
         # print(netlist_to_solve.connections)
         solved = algorithm(grid, Netlist(netlist_file)).solve()
@@ -121,6 +120,8 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
             if cost < lowest_cost:
                 least_overlap = overlap
                 best_solution = solved
+        
+        n_runs += 1
 
     if best_solution == None:
         print("No solution found")
@@ -128,9 +129,6 @@ def main(chip, netlist, algorithm: Callable, output, visualisation):
 
     connections_made = evaluate(best_solution, grid)
     print(f"Reached {connections_made} connections")
-    t1 = time.time()
-    print("tijd =")
-    print(t1 - t0)
 
     circuit = Circuit(best_solution)
     headers = ["net", "wires"]
@@ -165,6 +163,7 @@ if __name__ == "__main__":
         "algorithm",
         help="algorithm to be used: [random_algo, greedy_distance, greedy_cost]",
     )
+    parser.add_argument("runtime", type= int, help="runtime in seconds")
     parser.add_argument("output_file", help="output file (csv)", nargs="?")
     parser.add_argument("visualisation_file", help="visualization (png)", nargs="?")
 
@@ -176,6 +175,7 @@ if __name__ == "__main__":
         args.chip_file,
         args.netlist_file,
         args.algorithm,
+        args.runtime,
         args.output_file,
         args.visualisation_file,
     )

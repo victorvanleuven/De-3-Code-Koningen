@@ -165,8 +165,7 @@ class Greedy_Random_Hillclimber:
                         connection_path_dict[connection] = path
                         overlapping_lines_dict = self.find_overlap(connection_path_dict)
                         break
-
-        print(count_overlap(connection_path_dict))
+                    
         return connection_path_dict
 
     def solve(self):
