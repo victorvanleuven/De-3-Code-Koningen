@@ -67,7 +67,7 @@ def main(chip, netlist, algorithm_name: Callable, runtime, output, visualisation
     and "test/chip_a_netlist_b_datetime.png" respectively
     """
     golden_dict = []
-    batch_runs = 4
+    batch_runs = 10
     for batch in range(batch_runs):
         timestamp = str(datetime.datetime.now())[5:16]
 
@@ -154,7 +154,7 @@ def main(chip, netlist, algorithm_name: Callable, runtime, output, visualisation
         golden_headers = ["runs", "overlap"]
         golden_row = {"runs": n_runs, "overlap": overlap}
         golden_dict.append(golden_row)
-        golden_file = f"test/{netlist}_{algorithm_name}_{batch_runs}.csv" 
+        golden_file = f"test/{netlist}_{algorithm_name}_{runtime}.csv" 
         with open(golden_file, "w") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=golden_headers)
             writer.writeheader()
