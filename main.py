@@ -15,9 +15,6 @@ import datetime
 import time
 
 
-# RUNS = 100
-
-
 def evaluate(connection_path_dict, grid):
     gate_dict = grid.gate_dict
     counter = 0
@@ -61,7 +58,7 @@ def count_overlap(connection_path_dict):
     return overlap
 
 
-def main(chip, netlist, algorithm: Callable, runtime, output, visualisation):
+def main(chip, netlist, algorithm_name: Callable, runtime, output, visualisation):
     """
     usage: python3 main.py chip_a netlist_b algorithm [output] [visualisation]
 
@@ -69,85 +66,98 @@ def main(chip, netlist, algorithm: Callable, runtime, output, visualisation):
     output and visualisation are optional and have default file names "test/chip_a_netlist_b_datetime.csv"
     and "test/chip_a_netlist_b_datetime.png" respectively
     """
-    timestamp = str(datetime.datetime.now())[5:16]
-    if output == None:
-        output = f"test/{netlist}/{algorithm}_{runtime}_[{timestamp}].csv"
-    if visualisation == None:
-        visualisation = f"test/{netlist}/{algorithm}_{runtime}_[{timestamp}].png"
+    golden_dict = []
+    batch_runs = 60
+    for batch in range(batch_runs):
+        timestamp = str(datetime.datetime.now())[5:16]
 
-    grid_file = f"data/{chip}/print_{chip[-1]}.csv"
-    netlist_file = f"data/{chip}/{netlist}.csv"
+        grid_file = f"data/{chip}/print_{chip[-1]}.csv"
+        netlist_file = f"data/{chip}/{netlist}.csv"
 
-    grid = Grid(grid_file)
+        grid = Grid(grid_file)
 
-    # try a 1000 times, pick correct solution with lowest cost
-    lowest_cost = 10000000000000
-    most_connections = 0
-    best_solution = None
+        lowest_cost = 10000000000000
+        most_connections = 0
+        best_solution = None
 
-    algo_dict = {
-        "baseline": baseline.Baseline,
-        "gr": greedy_random.Greedy_Random,
-        "gr_2": greedy_random_2_0.Greedy_Random_2,
-        "gr_hill": gr_h.Greedy_Random_Hillclimber,
-    }
-    algorithm = algo_dict[algorithm]
+        algo_dict = {
+            "baseline": baseline.Baseline,
+            "gr": greedy_random.Greedy_Random,
+            "gr_2": greedy_random_2_0.Greedy_Random_2,
+            "gr_hill": gr_h.Greedy_Random_Hillclimber,
+        }
+        algorithm = algo_dict[algorithm_name]
 
-    start = time.time()
-    n_runs = 0
-    least_overlap = 1000000
+        start = time.time()
+        n_runs = 0
+        least_overlap = 1000000
 
-    while time.time() - start < runtime:
-        print(n_runs)
+    
+        while time.time() - start < runtime:
+            print(n_runs)
 
-        # print(netlist_to_solve.connections)
-        solved = algorithm(grid, Netlist(netlist_file)).solve()
+            # print(netlist_to_solve.connections)
+            solved = algorithm(grid, Netlist(netlist_file)).solve()
 
-        cost = Circuit(solved).cost()
+            cost = Circuit(solved).cost()
 
-        connections_made = evaluate(solved, grid)
+            connections_made = evaluate(solved, grid)
 
-        overlap = count_overlap(solved)
+            overlap = count_overlap(solved)
 
-        # algorithms either make all connections with overlap or avoid overlap but fail to make connections
-        # which is why only one of the two conditions has to be checked
-        if connections_made > most_connections or overlap < least_overlap:
-            most_connections = connections_made
-            lowest_cost = cost
-            least_overlap = overlap
-            best_solution = solved
-        elif connections_made == most_connections and overlap == least_overlap:
-            if cost < lowest_cost:
+            # algorithms either make all connections with overlap or avoid overlap but fail to make connections
+            # which is why only one of the two conditions has to be checked
+            if connections_made > most_connections or overlap < least_overlap:
+                most_connections = connections_made
+                lowest_cost = cost
                 least_overlap = overlap
                 best_solution = solved
+            elif connections_made == most_connections and overlap == least_overlap:
+                if cost < lowest_cost:
+                    least_overlap = overlap
+                    best_solution = solved
+            
+            n_runs += 1
+
+        if best_solution == None:
+            print("No solution found")
+            return 0
+
+        connections_made = evaluate(best_solution, grid)
+        print(f"Reached {connections_made} connections")
+
+        circuit = Circuit(best_solution)
+        headers = ["net", "wires"]
+
+        new_dict = []
         
-        n_runs += 1
+        for connection in best_solution.keys():
+            new_row = {"net": connection, "wires": best_solution[connection]}
+            new_dict.append(new_row)
 
-    if best_solution == None:
-        print("No solution found")
-        return 0
+        new_dict.append(
+            {"net": f"{chip}_{netlist[0:3]+netlist[-2:]}", "wires": circuit.cost()}
+        )
 
-    connections_made = evaluate(best_solution, grid)
-    print(f"Reached {connections_made} connections")
+        output = f"test/{netlist}/{algorithm_name}_{runtime}_[{batch}]_{n_runs}_{overlap}.csv"
+        visualisation = f"test/{netlist}/{algorithm_name}_{runtime}_[{batch}]_{n_runs}_{overlap}.png"
+        print(output)
 
-    circuit = Circuit(best_solution)
-    headers = ["net", "wires"]
+        with open(output, "w") as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=headers)
+            writer.writeheader()
+            writer.writerows(new_dict)
 
-    new_dict = []
-    for connection in best_solution.keys():
-        new_row = {"net": connection, "wires": best_solution[connection]}
-        new_dict.append(new_row)
+        visualization.visualize_grid(visualisation, grid_file, output)
 
-    new_dict.append(
-        {"net": f"{chip}_{netlist[0:3]+netlist[-2:]}", "wires": circuit.cost()}
-    )
-
-    with open(output, "w") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=headers)
-        writer.writeheader()
-        writer.writerows(new_dict)
-
-    visualization.visualize_grid(visualisation, grid_file, output)
+        # used for data gathering only, delete later
+        golden_row = {"runs": n_runs, "overlap": overlap}
+        golden_dict.append(golden_row)
+        golden_file = f"test/{netlist}_{algorithm_name}_{batch_runs}.csv" 
+        with open(golden_file, "w") as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=headers)
+            writer.writeheader()
+            writer.writerows(golden_dict)
 
 
 if __name__ == "__main__":
