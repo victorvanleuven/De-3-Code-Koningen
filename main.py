@@ -67,7 +67,7 @@ def main(chip, netlist, algorithm_name: Callable, runtime, output, visualisation
     and "test/chip_a_netlist_b_datetime.png" respectively
     """
     golden_dict = []
-    batch_runs = 60
+    batch_runs = 4
     for batch in range(batch_runs):
         timestamp = str(datetime.datetime.now())[5:16]
 
@@ -127,35 +127,36 @@ def main(chip, netlist, algorithm_name: Callable, runtime, output, visualisation
         print(f"Reached {connections_made} connections")
 
         circuit = Circuit(best_solution)
-        headers = ["net", "wires"]
 
-        new_dict = []
-        
-        for connection in best_solution.keys():
-            new_row = {"net": connection, "wires": best_solution[connection]}
-            new_dict.append(new_row)
-
-        new_dict.append(
-            {"net": f"{chip}_{netlist[0:3]+netlist[-2:]}", "wires": circuit.cost()}
-        )
 
         output = f"test/{netlist}/{algorithm_name}_{runtime}_[{batch}]_{n_runs}_{overlap}.csv"
         visualisation = f"test/{netlist}/{algorithm_name}_{runtime}_[{batch}]_{n_runs}_{overlap}.png"
         print(output)
 
+        # make output csv file
+        new_dict = []
+        headers = ["net", "wires"]
+        for connection in best_solution.keys():
+            new_row = {"net": connection, "wires": best_solution[connection]}
+            new_dict.append(new_row)
+        new_dict.append(
+            {"net": f"{chip}_{netlist[0:3]+netlist[-2:]}", "wires": circuit.cost()}
+        )
         with open(output, "w") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=headers)
             writer.writeheader()
             writer.writerows(new_dict)
 
+        # make visualisation file
         visualization.visualize_grid(visualisation, grid_file, output)
 
         # used for data gathering only, delete later
+        golden_headers = ["runs", "overlap"]
         golden_row = {"runs": n_runs, "overlap": overlap}
         golden_dict.append(golden_row)
         golden_file = f"test/{netlist}_{algorithm_name}_{batch_runs}.csv" 
         with open(golden_file, "w") as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=headers)
+            writer = csv.DictWriter(csvfile, fieldnames=golden_headers)
             writer.writeheader()
             writer.writerows(golden_dict)
 
