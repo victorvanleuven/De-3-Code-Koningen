@@ -38,16 +38,11 @@ def list_in(list, list_of_lists):
     return False
 
 
-def list_remove(list, element):
-    counter = 0
-    for element2 in list:
-        if list_compare(element, element2):
-            return list[0:counter] + list[counter + 1 :]
-        counter += 1
-    return list
-
-
 def is_valid(start, adjustment, used_lines, forbidden_gates, grid):
+    """
+    returns if a move is between bounds of the grid and does not overlap other lines
+    or cross gates
+    """
     line = {tuple(start), tuple(start + adjustment)}
     if type(used_lines) != list:
         used_lines = [item for sublist in used_lines.values() for item in sublist]
@@ -55,14 +50,6 @@ def is_valid(start, adjustment, used_lines, forbidden_gates, grid):
         not line in used_lines
         and not list_in(start + adjustment, forbidden_gates)
         and check_max_value(start + adjustment, grid)
-    ):
-        return True
-    return False
-
-
-def is_almost_valid(start, adjustment, forbidden_gates, grid):
-    if not list_in(start + adjustment, forbidden_gates) and check_max_value(
-        start + adjustment, grid
     ):
         return True
     return False
