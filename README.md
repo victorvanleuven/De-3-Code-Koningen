@@ -34,17 +34,17 @@ Hieronder is een lijst van de verschillende mappen en files die voorkomen in dit
 ### Algoritmes
 
 Hieronder een korte beschrijving van de algoritmes die worden gebruikt.
-# Baseline
+##### Baseline
 Het baseline algoritme probeert oplossingen te genereren door alleen maar willekeurige zetten te doen, dus zonder enige heuristieken.
 
-# Greedy Random
+##### Greedy Random
 Dit algoritme onderscheidt per connectie de stappen die naar de bestemming toe gaan (greedy) en stappen die ervan afwijken (non-greedy). Als er greedy stappen zijn, wordt daar een willekeurige keuze gemaakt met voorkeur voor de x- en y-richting. Indien er geen greedy stappen mogelijk zijn, wordt een willekeurige keuze gemaakt uit de non-greedy stappen, met voorkeur voor de z-richting.
 
-# Greedy Random 2.0
+##### Greedy Random 2.0
 Greedy Random 2.0 zet stappen op dezelfde manier als greedy random, maar forceert zichzelf na elke tien connecties een laag omhoog.
 Tevens probeert dit algoritme een pad opnieuw als er geen geldige stappen meer zijn, en blijft dit honderd keer proberen, waarna het alle paden wist en opnieuw begint bij de connectie waar het vastliep. (De eerder gemaakte connecties worden dan juist als laatste geprobeerd.)
 
-# Greedy Random Hill Climber
+##### Greedy Random Hill Climber
 given solution with overlap, tries connections with overlap again using greedy random 2.0
 Begint met een oplossing genereerd door het greedy random algoritme, waarbij overlap niet in acht werd genomen, maar wel alle connecties zijn gemaakt. 
 Gaat over de connecties met overlap heen en probeert hiervan connecties zonder overlap te maken met behulp van het greedy random 2.0-algoritme. 
