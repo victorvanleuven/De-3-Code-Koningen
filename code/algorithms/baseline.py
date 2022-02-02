@@ -2,10 +2,12 @@ from .helpers import is_valid
 import numpy as np
 import random
 
+
 class Baseline:
     """
     baseline algorithm, tries to solve the netlist by only making random moves
     """
+
     def __init__(self, grid, netlist):
         self.netlist = netlist
         self.gates = grid.gate_dict

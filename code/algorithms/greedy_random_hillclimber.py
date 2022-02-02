@@ -8,6 +8,7 @@ class Greedy_Random_Hillclimber:
     algorithm generates a non valid solution with a connections but with overlap,
     then by hill climbing generates a solution with less overlap
     """
+
     def __init__(self, grid, netlist):
         self.netlist = netlist
         self.gates = grid.gate_dict
@@ -64,11 +65,15 @@ class Greedy_Random_Hillclimber:
             adjustment = np.array((0, 0, 0))
             if start[direction] > destination[direction]:
                 adjustment[direction] -= 1
-                if is_valid(start, adjustment, local_used_lines, forbidden_gates, self.grid):
+                if is_valid(
+                    start, adjustment, local_used_lines, forbidden_gates, self.grid
+                ):
                     return adjustment
             elif start[direction] < destination[direction]:
                 adjustment[direction] += 1
-                if is_valid(start, adjustment, local_used_lines, forbidden_gates, self.grid):
+                if is_valid(
+                    start, adjustment, local_used_lines, forbidden_gates, self.grid
+                ):
                     return adjustment
 
         # if we can't move more towards our destination, force to go other valid direction
@@ -78,7 +83,9 @@ class Greedy_Random_Hillclimber:
         for direction in directions:
             adjustment = np.array((0, 0, 0))
             adjustment[direction] = 1
-            if is_valid(start, adjustment, local_used_lines, forbidden_gates, self.grid):
+            if is_valid(
+                start, adjustment, local_used_lines, forbidden_gates, self.grid
+            ):
                 return adjustment
 
         return np.array((0, 0, 0))
@@ -90,14 +97,14 @@ class Greedy_Random_Hillclimber:
         while self.tries < 500:
             # get overlapping lines per connection
             overlapping_lines_dict = self.find_overlap(connection_path_dict)
-            
+
             # stop if there is no more overlap
             overlapping_lines_list = [
                 item for sublist in overlapping_lines_dict.values() for item in sublist
             ]
             if len(overlapping_lines_list) == 0:
                 break
-            
+
             # try connections with overlap again using greedy random 2.0
             for connection in overlapping_lines_dict:
                 if connection not in overlapping_lines_dict:
@@ -118,7 +125,7 @@ class Greedy_Random_Hillclimber:
                 destination = self.gates[connection[1]]
                 step = start
                 path = [start]
-                
+
                 while True:
                     used_lines_list = [
                         item for sublist in self.used_lines.values() for item in sublist
@@ -146,12 +153,12 @@ class Greedy_Random_Hillclimber:
                         connection_path_dict[connection] = path
                         overlapping_lines_dict = self.find_overlap(connection_path_dict)
                         break
-                    
+
         return connection_path_dict
 
     def solve(self):
         """
-        ignore overlap, keep on making the move that minimizes the distance to our destination, 
+        ignore overlap, keep on making the move that minimizes the distance to our destination,
         choose randomly between best moves
         """
         netlist = self.netlist.connections

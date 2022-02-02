@@ -1,10 +1,12 @@
 from .helpers import is_valid
 import numpy as np
 
+
 class Greedy_Random:
     """
     algorithm which is greedy with respect to the manhattan distance and chooses randomly between moves of same value
     """
+
     def __init__(self, grid, netlist):
         self.netlist = netlist
         self.gates = grid.gate_dict
@@ -13,7 +15,7 @@ class Greedy_Random:
 
     def move(self, start, destination):
         """
-        if there are moves that bring us closer to our destination choose randomly between them, 
+        if there are moves that bring us closer to our destination choose randomly between them,
         otherwise choose randomly between other directions
         """
         start = np.array(start)

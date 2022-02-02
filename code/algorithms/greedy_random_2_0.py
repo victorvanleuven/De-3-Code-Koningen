@@ -8,6 +8,7 @@ class Greedy_Random_2:
     """
     algorithm based on the greedy random algorithm, which forces paths to upper layers
     """
+
     def __init__(self, grid, netlist):
         self.netlist = netlist
         self.gates = grid.gate_dict

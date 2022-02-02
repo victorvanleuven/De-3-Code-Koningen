@@ -12,13 +12,13 @@ dataframe = pandas.read_csv(filename_output)
 
 dataframe = dataframe[dataframe.connections == 30]
 
-cost_list = dataframe['cost'] 
+cost_list = dataframe["cost"]
 
-cost_list.plot.kde(bw_method = 0.5)
+cost_list.plot.kde(bw_method=0.5)
 
 plt.xlim([0, 50000])
 plt.xlabel("Cost")
 
-plt.hist(cost_list, bins=10, density= True, histtype="bar", rwidth=0.75)
+plt.hist(cost_list, bins=10, density=True, histtype="bar", rwidth=0.75)
 
 plt.savefig("first_plot.png")

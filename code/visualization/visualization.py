@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from code.classes.grid import (Grid, project_three_d)
+from code.classes.grid import Grid, project_three_d
 import csv
 from ast import literal_eval
 

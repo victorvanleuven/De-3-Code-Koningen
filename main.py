@@ -126,9 +126,14 @@ def main(chip, netlist, algorithm_name: Callable, runtime, batchruns):
 
         # add data of current run to csv of all batchruns
         batch_headers = ["runs", "connections", "cost", "overlap"]
-        batch_row = {"runs": n_runs, "connections": most_connections, "cost": lowest_cost, "overlap": least_overlap}
+        batch_row = {
+            "runs": n_runs,
+            "connections": most_connections,
+            "cost": lowest_cost,
+            "overlap": least_overlap,
+        }
         batch_dict_list.append(batch_row)
-        batch_file = f"test/batchruns/{netlist}_{algorithm_name}_{runtime}.csv" 
+        batch_file = f"test/batchruns/{netlist}_{algorithm_name}_{runtime}.csv"
         with open(batch_file, "w") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=batch_headers)
             writer.writeheader()
@@ -148,8 +153,8 @@ if __name__ == "__main__":
         "algorithm",
         help="algorithm to be used: [random_algo, greedy_distance, greedy_cost]",
     )
-    parser.add_argument("runtime", type= int, help="runtime in seconds")
-    parser.add_argument("batchruns", type= int, help="number of batchruns")
+    parser.add_argument("runtime", type=int, help="runtime in seconds")
+    parser.add_argument("batchruns", type=int, help="number of batchruns")
 
     # Read arguments from command line
     args = parser.parse_args()

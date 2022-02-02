@@ -9,10 +9,12 @@ def project_three_d(coord):
         coord += (0,)
     return coord
 
-class Grid():
+
+class Grid:
     """
     class of a grid holding gates
     """
+
     def __init__(self, source_file):
         self.gate_dict = self.load_grid(source_file)
 
@@ -23,7 +25,7 @@ class Grid():
         gate_coord_dict = {}
 
         with open(filename_grid) as file:
-            csvreader = csv.reader(file, delimiter=',')
+            csvreader = csv.reader(file, delimiter=",")
 
             # skips headers of csv
             next(csvreader)
@@ -33,7 +35,7 @@ class Grid():
                 coordinates = tuple(row[1:])
                 coordinates_int = tuple(map(int, coordinates))
                 gate_coord_dict[gate] = project_three_d(coordinates_int)
-        
+
         return gate_coord_dict
 
     def get_maxmin_xy(self):
@@ -46,13 +48,10 @@ class Grid():
         for coordinate in self.gate_dict.values():
             x_values.append(coordinate[0])
             y_values.append(coordinate[1])
-        
+
         max_x = max(x_values)
         min_x = min(x_values)
         max_y = max(y_values)
         min_y = min(y_values)
 
         return {"max_x": max_x, "min_x": min_x, "max_y": max_y, "min_y": min_y}
-            
-            
-

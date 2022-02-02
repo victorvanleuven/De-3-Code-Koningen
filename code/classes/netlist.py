@@ -1,9 +1,11 @@
 import csv
 
-class Netlist():
+
+class Netlist:
     """
     class of connected gates
     """
+
     def __init__(self, source_file):
         self.connections = self.load_netlist(source_file)
 
@@ -14,7 +16,7 @@ class Netlist():
         netlist = []
 
         with open(filename_netlist) as file:
-            csvreader = csv.reader(file, delimiter=',')
+            csvreader = csv.reader(file, delimiter=",")
 
             # skipping headers of csv
             next(csvreader)
