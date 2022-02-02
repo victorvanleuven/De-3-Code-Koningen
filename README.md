@@ -24,7 +24,7 @@ python3 main.py chip_0 netlist_1 gr 60 4
 Hieronder is een lijst van de verschillende mappen en files die voorkomen in dit project met een korte beschrijving.
 
 * /code: bevat alle code van dit project.
-  * /code/algorithms: bevat de code voor de verschillende algoritmes. (baseline, eerste en tweede algoritme)
+  * /code/algorithms: bevat de code voor de verschillende algoritmes. (baseline, greedy random en hillclimber)
   * /code/classes: bevat de benodigde classes voor deze case.
   * /code/visualisation: bevat de code voor de visualisatie van het grid.
   * /code/helpers: bevat de verschillende helper functies.
