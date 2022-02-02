@@ -136,16 +136,12 @@ class Greedy_Random_2:
 
                 adjustment = self.move(step, coords_gate_b, layer_to_use, used_lines)
 
-                # try the same step 15 times
-                #if np.array_equal(adjustment, np.array((0, 0, 0))) and tries < 15:
-                    #tries += 1
-                    #continue
-
-                # try the whole path again after 24 times trying the same step
+                # try the whole path again when stuck
                 if np.array_equal(adjustment, np.array((0, 0, 0))):
                     path = [coords_gate_a]
                     step = np.array(coords_gate_a)
                     self.used_lines_dict[connection] = []
+
                     # after 100 times trying the path reset every path and start again at the path that was stuck
                     if tries == 100:
                         tries = 0
@@ -159,12 +155,9 @@ class Greedy_Random_2:
 
                         netlist_counter = 0
                         continue
+
                     tries += 1
                     continue
-
-                # comparison = adjustment == np.array((0,0,0))
-                # if comparison.all() == True:
-                #     break
 
                 next_step = tuple(step + adjustment)
                 line = {tuple(step), next_step}

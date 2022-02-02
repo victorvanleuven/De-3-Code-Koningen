@@ -1,21 +1,19 @@
-"""
-Third algorithm generates a non valid solution with a connections but with overlap. Then by hill climbing generates a valid low-cost solution.
-"""
 from code.algorithms.greedy_random_2_0 import Greedy_Random_2
-from code.algorithms.baseline import Baseline
 from .helpers import list_compare, is_valid
 import numpy as np
-from main import count_overlap
 
 
 class Greedy_Random_Hillclimber:
+    """
+    algorithm generates a non valid solution with a connections but with overlap,
+    then by hill climbing generates a solution with less overlap
+    """
     def __init__(self, grid, netlist):
-
         self.netlist = netlist
         self.gates = grid.gate_dict
         self.grid = grid
         self.max_values = grid.get_maxmin_xy()
-        # self.arrived = False
+        self.arrived_xy = False
         self.tries = 0
 
         self.used_lines = {}
