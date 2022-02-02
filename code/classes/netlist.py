@@ -1,15 +1,16 @@
 import csv
 
 class Netlist():
+    """
+    class of connected gates
+    """
     def __init__(self, source_file):
-        # lijst van tuples, chips die met elkaar geconnect zijn
         self.connections = self.load_netlist(source_file)
 
-    # input = gate, output = alle gates waarmee input gate een connectie heeft
-    def get_connections(self, gate):
-        pass
-
     def load_netlist(self, filename_netlist):
+        """
+        retrieves list of all connections from a netlist csv
+        """
         netlist = []
 
         with open(filename_netlist) as file:

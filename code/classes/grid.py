@@ -1,23 +1,25 @@
 import csv
 
 
-# maakt van 2d coordinaten (tuple) 3d coordinaten door een 0 toe te voegen.
 def project_three_d(coord):
+    """
+    projects 2d coordinates into 3d coordinates in the z=0 plane
+    """
     if len(coord) == 2:
         coord += (0,)
     return coord
 
-
 class Grid():
+    """
+    class of a grid holding gates
+    """
     def __init__(self, source_file):
-        # input moet dict zijn, met gate_nr = key en coordinaten van gate in tuple
         self.gate_dict = self.load_grid(source_file)
-        # n: x, y
-
-    def get_coord(self, gate):
-        return self.gate_dict[gate]
 
     def load_grid(self, filename_grid):
+        """
+        loads csv file of grid into dictionary (connections as keys and paths as values)
+        """
         gate_coord_dict = {}
 
         with open(filename_grid) as file:
@@ -29,14 +31,15 @@ class Grid():
             for row in csvreader:
                 gate = int(row[0])
                 coordinates = tuple(row[1:])
-
                 coordinates_int = tuple(map(int, coordinates))
-                
                 gate_coord_dict[gate] = project_three_d(coordinates_int)
         
         return gate_coord_dict
 
     def get_maxmin_xy(self):
+        """
+        returns dictionary of maximum and minimum x and y values
+        """
         x_values = []
         y_values = []
 

@@ -3,7 +3,8 @@ Third algorithm generates a non valid solution with a connections but with overl
 """
 from code.algorithms.greedy_random_2_0 import Greedy_Random_2
 from code.algorithms.baseline import Baseline
-from .helpers import np, list_compare, random, is_valid
+from .helpers import list_compare, is_valid
+import numpy as np
 from main import count_overlap
 
 

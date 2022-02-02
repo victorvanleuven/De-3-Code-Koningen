@@ -1,10 +1,6 @@
 """
 contains all helper functions used in algorithms
 """
-
-import numpy as np
-import random
-
 LAYERS = 7
 
 

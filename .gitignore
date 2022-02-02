@@ -3,6 +3,9 @@ test/
 __pycache__
 algorithms/__pycache__
 
+# some mac thing?
+.DS_Store
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

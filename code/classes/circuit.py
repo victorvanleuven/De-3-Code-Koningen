@@ -1,36 +1,36 @@
 class Circuit():
-    def __init__(self, connection_wire_dict):
+    def __init__(self, connection_path_dict):
         # tuple als key, met lijst van tuples(coords)
-        self.connection_wire_dict = connection_wire_dict
+        self.connection_path_dict = connection_path_dict
 
     def cost(self):
+        """
+        calculates the cost of a solution
+        """
         wire_length = 0
-        for key in self.connection_wire_dict:
-            connection_length = len(self.connection_wire_dict[key]) - 1
+        for key in self.connection_path_dict:
+            connection_length = len(self.connection_path_dict[key]) - 1
             wire_length += connection_length
         
-        # alle lijsten samenvoegen, aantal duplicates tellen en dat is aantal intersections met union
-        # verschil lengte oorspronkelijke lijst en lengte set = aantal intersections
-        # kan sneller met intersect maar werkt misschien niet door verwijderen van intersections als er meer dan 2 samen komen
-        # print(wire_length)
-        # print(self.intersections())
         return wire_length + 300 * self.intersections()
 
     def intersections(self):
-        # every duplicate node is an intersection
-        nodes_used = self.connection_wire_dict.values()
-        nodes_used = [item for sublist in nodes_used for item in sublist]
+        """
+        counts all intersections in a solution
+        """
+        paths_used = self.connection_path_dict.values()
+        nodes_used = [item for sublist in paths_used for item in sublist]
         
+        # calculate total intersections
         intersections = len(nodes_used) - len(set(nodes_used))
+        connections = self.connection_path_dict.keys()
 
         # intersections in gates don't count, substract these
-        connections = self.connection_wire_dict.keys()
-        # make tuple containing all endpoints, including duplicates
-        endpoints = ()
+        gates = ()
         for connection in connections:
-            endpoints += tuple(connection)
+            gates += tuple(connection)
 
-        endpoint_intersections = len(endpoints) - len(set(endpoints))
+        gate_intersections = len(gates) - len(set(gates))
 
-        return intersections - endpoint_intersections
+        return intersections - gate_intersections
 

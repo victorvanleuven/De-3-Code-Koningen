@@ -1,28 +1,32 @@
-"""
-first algorithm based on the baseline, but avoiding overlap and even intersections by utilising upper layers
-"""
-from .helpers import np, is_valid
-
+from .helpers import is_valid
+import numpy as np
 
 class Greedy_Random:
+    """
+    algorithm which is greedy with respect to the manhattan distance and chooses randomly between moves of same value
+    """
     def __init__(self, grid, netlist):
-
         self.netlist = netlist
         self.gates = grid.gate_dict
         self.grid = grid
-
         self.used_lines = []
 
     def move(self, start, destination):
-
-        forbidden_gates = set(self.gates.values()) - {destination}
-
+        """
+        if there are moves that bring us closer to our destination choose randomly between them, 
+        otherwise choose randomly between other directions
+        """
         start = np.array(start)
         destination = np.array(destination)
 
+        # stop if we have arrived at our destination
         if np.array_equal(start, destination):
             return np.array((0, 0, 0))
 
+        # avoid all gates except our destination
+        forbidden_gates = set(self.gates.values()) - {destination}
+
+        # iterate over directions in random order and search for a good move
         directions = np.random.choice(
             range(3), 3, replace=False, p=[50 / 101, 50 / 101, 1 / 101]
         )
@@ -51,11 +55,12 @@ class Greedy_Random:
             if is_valid(start, adjustment, self.used_lines, forbidden_gates, self.grid):
                 return adjustment
 
+        # if no valid moves were possible, return zero adjustment
         return np.array((0, 0, 0))
 
     def solve(self):
         """
-        keep on making the move that minimizes the distance to our destination, choose randomly between best moves
+        tries to realise connections one by one by making greedy random moves
         """
         netlist = self.netlist.connections
         connection_path_dict = {}
@@ -77,6 +82,7 @@ class Greedy_Random:
             while True:
                 adjustment = self.move(step, coords_gate_b)
 
+                # go to next connection if no moves are possible or if we arrived at our destination
                 comparison = adjustment == np.array((0, 0, 0))
                 if comparison.all() == True:
                     break

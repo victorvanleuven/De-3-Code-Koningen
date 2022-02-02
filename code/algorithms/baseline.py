@@ -1,20 +1,21 @@
-from .helpers import np, random, is_valid
-
+from .helpers import is_valid
+import numpy as np
+import random
 
 class Baseline:
+    """
+    baseline algorithm, tries to solve the netlist by only making random moves
+    """
     def __init__(self, grid, netlist):
-
         self.netlist = netlist
         self.gates = grid.gate_dict
         self.grid = grid
-
         self.used_lines = []
 
     def move(self, start, destination):
         """
         returns one step move in random direction if possible, else returns np.array of zeroes
         """
-
         # make sure we don't cross gates in our path
         forbidden_gates = set(self.gates.values()) - {destination}
 
@@ -41,6 +42,9 @@ class Baseline:
         return np.array((0, 0, 0))
 
     def solve(self):
+        """
+        tries to realise connections one by one by making random moves
+        """
         netlist = self.netlist.connections
         connection_path_dict = {}
 
@@ -61,6 +65,7 @@ class Baseline:
             while True:
                 adjustment = self.move(step, coords_gate_b)
 
+                # go to next connection if no moves are possible or if we arrived at our destination
                 comparison = adjustment == np.array((0, 0, 0))
                 if comparison.all() == True:
                     break

@@ -1,43 +1,53 @@
-"""
-Forces to upper layers based on length netlist
-"""
-from .helpers import np, list_compare, random, is_valid
+from .helpers import is_valid
+import numpy as np
+import random
+import time
 
 
 class Greedy_Random_2:
+    """
+    algorithm based on the greedy random algorithm, which forces paths to upper layers
+    """
     def __init__(self, grid, netlist):
         self.netlist = netlist
         self.gates = grid.gate_dict
         self.grid = grid
 
+        # keep track of path sorted by connections
         self.used_lines_dict = {}
+        self.arrived_xy = False
 
     def move(self, start, destination, layer_to_use, used_lines):
-
-        forbidden_gates = set(self.gates.values()) - {destination}
-
+        """
+        first goes up to layer to use and then makes greedy random moves at given layer
+        """
         start = np.array(start)
         destination = np.array(destination)
-        arrived = False
 
+        # stop if we have arrived at our destination
         if np.array_equal(start, destination):
-            arrived = True
             adjustment = np.array((0, 0, 0))
             return adjustment
 
-        if start[0] == destination[0] and start[1] == destination[1]:
-            adjustment = np.array((0, 0, 0))
-            adjustment[2] -= 1
-            arrived = True
-            if is_valid(start, adjustment, used_lines, forbidden_gates, self.grid):
-                return adjustment
+        # avoid all gates except our destination
+        forbidden_gates = set(self.gates.values()) - {tuple(destination)}
 
-        if start[2] < layer_to_use and not arrived:
+        # first go up to given layer
+        if start[2] < layer_to_use and not self.arrived_xy:
             adjustment = np.array((0, 0, 0))
             adjustment[2] += 1
             if is_valid(start, adjustment, used_lines, forbidden_gates, self.grid):
                 return adjustment
 
+        # when have arrived at x,y values of destination, try to move down
+        if start[0] == destination[0] and start[1] == destination[1]:
+            adjustment = np.array((0, 0, 0))
+            adjustment[2] -= 1
+            self.arrived_xy = True
+            if is_valid(start, adjustment, used_lines, forbidden_gates, self.grid):
+                return adjustment
+
+        # move to our destination greedy randomly
         directions = np.random.choice(
             range(3), 3, replace=False, p=[50 / 101, 50 / 101, 1 / 101]
         )
@@ -62,7 +72,7 @@ class Greedy_Random_2:
             if is_valid(start, adjustment, used_lines, forbidden_gates, self.grid):
                 return adjustment
 
-            # when path is at destination but too high
+            # when path is at destination but too high, make random moves
             if (
                 start[0] == destination[0]
                 and start[1] == destination[1]
@@ -78,21 +88,25 @@ class Greedy_Random_2:
 
     def solve(self):
         """
-        keep on making the move that minimizes the distance to our destination, choose randomly between best moves
+        try to make connections, if we get stuck at a connection, try again
+        if we cannot manage to make the connection in 100 tries, delete all paths and start over,
+        beginning at the connection where we got stuck
         """
         connection_path_dict = {}
         netlist_counter = 0
         iteration_count = 0
         tries = 0
 
+        # divide total runtime by connections
+        start_time = time.time()
+        runtime = 3600 / 70
+
         for connection in self.netlist.connections:
             iteration_count += 1
-
             netlist_counter += 1
-            # connections_per_layer = len(self.netlist.connections) / 7
-            # print(connections_per_layer)
+
+            # use approximately one layer per 10 connections
             layer_to_use = netlist_counter // 10
-            # print(layer_to_use)
 
             # get gates and their coordinates
             gate_a = connection[0]
@@ -106,12 +120,14 @@ class Greedy_Random_2:
             step = np.array(coords_gate_a)
             path = [coords_gate_a]
 
-            while True:
+            while time.time() - start_time < runtime:
+                print(iteration_count)
 
+                # go to new connections if we have arrived
                 if np.array_equal(step, coords_gate_b):
                     break
 
-                # create a list of all values in used lines
+                # create a list of all used lines
                 used_lines = [
                     item
                     for sublist in self.used_lines_dict.values()
@@ -120,10 +136,10 @@ class Greedy_Random_2:
 
                 adjustment = self.move(step, coords_gate_b, layer_to_use, used_lines)
 
-                # try the same step 24 times
-                if np.array_equal(adjustment, np.array((0, 0, 0))) and tries < 25:
-                    tries += 1
-                    continue
+                # try the same step 15 times
+                #if np.array_equal(adjustment, np.array((0, 0, 0))) and tries < 15:
+                    #tries += 1
+                    #continue
 
                 # try the whole path again after 24 times trying the same step
                 if np.array_equal(adjustment, np.array((0, 0, 0))):
@@ -133,9 +149,7 @@ class Greedy_Random_2:
                     # after 100 times trying the path reset every path and start again at the path that was stuck
                     if tries == 100:
                         tries = 0
-                        # print(len(connection_path_dict))
                         self.used_lines_dict = {}
-                        # print(self.used_lines_dict)
                         for connection in connection_path_dict.keys():
                             self.netlist.connections.append(connection)
 
