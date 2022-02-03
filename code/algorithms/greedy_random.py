@@ -26,7 +26,7 @@ class Greedy_Random:
             return np.array((0, 0, 0))
 
         # avoid all gates except our destination
-        forbidden_gates = set(self.gates.values()) - {destination}
+        forbidden_gates = set(self.gates.values()) - {tuple(destination)}
 
         # iterate over directions in random order and search for a good move
         directions = np.random.choice(

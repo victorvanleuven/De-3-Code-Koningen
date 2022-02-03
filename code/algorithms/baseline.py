@@ -19,7 +19,7 @@ class Baseline:
         returns one step move in random direction if possible, else returns np.array of zeroes
         """
         # make sure we don't cross gates in our path
-        forbidden_gates = set(self.gates.values()) - {destination}
+        forbidden_gates = set(self.gates.values()) - {tuple(destination)}
 
         start = np.array(start)
         destination = np.array(destination)

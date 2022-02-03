@@ -1,7 +1,8 @@
 # ignore test files
 test/
 __pycache__
-algorithms/__pycache__
+code/algorithms/__pycache__
+code/algorithms/astar.py
 
 # some mac thing?
 .DS_Store
