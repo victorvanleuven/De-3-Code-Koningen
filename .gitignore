@@ -3,6 +3,7 @@ test/
 __pycache__
 code/algorithms/__pycache__
 code/algorithms/astar.py
+code/classes/node.py
 
 # some mac thing?
 .DS_Store

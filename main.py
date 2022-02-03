@@ -9,8 +9,8 @@ from code.algorithms import (
     greedy_random,
     greedy_random_2_0,
     greedy_random_hillclimber as gr_h,
+    astar,
 )
-from typing import Callable
 import time
 
 
@@ -53,7 +53,7 @@ def count_overlap(connection_path_dict):
     return overlap
 
 
-def main(chip, netlist, algorithm_name: Callable, runtime, batchruns):
+def main(chip, netlist, algorithm_name, runtime, batchruns):
     # gather data from batchruns into one list of dictionaries
     batch_dict_list = []
     for batch in range(batchruns):
@@ -73,6 +73,7 @@ def main(chip, netlist, algorithm_name: Callable, runtime, batchruns):
             "gr": greedy_random.Greedy_Random,
             "gr_2": greedy_random_2_0.Greedy_Random_2,
             "gr_hill": gr_h.Greedy_Random_Hillclimber,
+            "astar": astar.A_star,
         }
         algorithm = algo_dict[algorithm_name]
 
@@ -104,8 +105,8 @@ def main(chip, netlist, algorithm_name: Callable, runtime, batchruns):
             print("No solution found")
             return 0
 
-        output = f"test/{netlist}/{algorithm_name}_{runtime}_[{batch}]_{n_runs}_{overlap}.csv"
-        visualisation = f"test/{netlist}/{algorithm_name}_{runtime}_[{batch}]_{n_runs}_{overlap}.png"
+        output = f"results/{netlist}/{algorithm_name}_{runtime}_[{batch}]_{n_runs}_{overlap}.csv"
+        visualisation = f"results/{netlist}/{algorithm_name}_{runtime}_[{batch}]_{n_runs}_{overlap}.png"
 
         # make solution of current run into csv file and visualize it
         run_dict_list = []
@@ -133,7 +134,7 @@ def main(chip, netlist, algorithm_name: Callable, runtime, batchruns):
             "overlap": least_overlap,
         }
         batch_dict_list.append(batch_row)
-        batch_file = f"test/batchruns/{netlist}_{algorithm_name}_{runtime}.csv"
+        batch_file = f"results/batchruns/{netlist}_{algorithm_name}_{runtime}.csv"
         with open(batch_file, "w") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=batch_headers)
             writer.writeheader()
